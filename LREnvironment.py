@@ -1,9 +1,12 @@
-def toJson(command):
-    return {}
+class LREnvironment:
 
-def fromJson(jsonData):
-    return EnvironmentConfig()
+    @classmethod
+    def toJson(command):
+        return {}
 
-class EnvironmentConfig:
+    @classmethod
+    def fromJson(jsonData):
+        return LREnvironment()
+
     def __init__(self):
         pass

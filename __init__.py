@@ -1,8 +1,8 @@
 import os
 from pathlib import Path
 
-from .App import App
+from .LRApp import LRApp
 
 def run(workingDir : Path = Path(os.getcwd())):
-    currentApp = App(workingDir)
+    currentApp = LRApp(workingDir)
     currentApp.exec()

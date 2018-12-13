@@ -3,29 +3,31 @@ class AWData:
         self.myIsDict = False
         
         if isinstance(obj, dict):
-            if name in obj:
-                self.myIsDict = True
-            else:
-                raise('Attribut {} is not in object instance!'.format(name))
+            self.myIsDict = name in obj
+            assert self.myIsDict, 'Key {} is not in dict!'.format(name)
         elif '__dict__' in dir(obj):
-            if name not in vars(obj):
-                raise('Attribut {} is not in object instance!'.format(name))
+            assert name in vars(obj), 'Attribut {} is not in object instance!'.format(name)
         else:
-            raise('The object is not a supported instance!')
+            raise TypeError('Only dict and object with __dict__ are supported. The type {} is not a supported!'.format(type(obj)))
 
         self.myObj = obj
         self.myName = name
-        self.myType = type(self.getData())
+        self.myType = type(self.data)
 
-    def getData(self):
+    def isType(self, _type):
+        return isinstance(self.data, _type)
+
+    @property
+    def data(self):
         if self.myIsDict:
             return self.myObj[self.myName]
         else:
             return getattr(self.myObj, self.myName)
 
-    def setData(self, value):
-        if isinstance(value, self.myType):
-            raise('The value {} dose NOT match data type {}!'.format(str(value), type))
+    @data.setter
+    def data(self, value):
+        if not isinstance(value, self.myType):
+            raise TypeError('The value "{}" with type "{}" dose NOT match data type {}!'.format(str(value), type(value), self.myType))
         
         if self.myIsDict:
             self.myObj[self.myName] = value

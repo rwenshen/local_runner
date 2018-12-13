@@ -1,11 +1,11 @@
 from pathlib import Path
 import json
 
+import LocalRunner.LRPath as LRPath
+from LocalRunner.LREnvironment import LREnvironment
+import LocalRunner.LRCommands as LRCommands
 
-import LocalRunner.EnvConfig as EnvConfig
-import LocalRunner.Commands as Commands
-
-class Project:
+class LRProject:
     sDefaultCategories = ['Start', 'Build Code', 'Build Data', 'Misc']
     
     cVersion = '0.0.1'
@@ -17,11 +17,10 @@ class Project:
 
     def __init__(self):
         self.myData = {}
-        self.myData[Project.cVersionName] = Project.cVersion
-        self.myData[Project.cBasePathName] = Path('\\')
-        self.myData[Project.cDefaultEnvsName] = EnvConfig.EnvironmentConfig()
-        self.myData[Project.cEnvConfigsName] = []
-        self.myData[Project.cCommandsName] = []
+        self.myData[LRProject.cBasePathName] = Path()
+        self.myData[LRProject.cDefaultEnvsName] = LREnvironment()
+        self.myData[LRProject.cEnvConfigsName] = []
+        self.myData[LRProject.cCommandsName] = []
 
     def load(self, jsonPath:Path):
         if jsonPath.exists():
@@ -29,9 +28,9 @@ class Project:
             self.myName = self.myJsonPath.stem
             try:
                 jsonData = json.loads(self.myJsonPath.read_text())
-                if Project.cVersionName in jsonData:
+                if LRProject.cVersionName in jsonData and jsonData[LRProject.cVersionName] == LRProject.cVersion:
                     self.updateFromJsonData(jsonData)
-                return True
+                    return True
             except:
                 return False
 
@@ -56,38 +55,46 @@ class Project:
 
     def updateFromJsonData(self, jsonData):
         # base
-        self.myData[Project.cBasePathName] = Path(jsonData[Project.cBasePathName])
+        self.myData[LRProject.cBasePathName] = Path(jsonData[LRProject.cBasePathName])
         # default environment settings
-        self.myData[Project.cDefaultEnvsName] = EnvConfig.fromJson(jsonData[Project.cDefaultEnvsName])
+        self.myData[LRProject.cDefaultEnvsName] = LREnvironment.fromJson(jsonData[LRProject.cDefaultEnvsName])
         # environment configs
-        self.myData[Project.cEnvConfigsName].clear()
-        self.myData[Project.cEnvConfigsName].extend([EnvConfig.fromJson(config) for config in jsonData[Project.cEnvConfigsName]])
+        self.myData[LRProject.cEnvConfigsName].clear()
+        self.myData[LRProject.cEnvConfigsName].extend([LREnvironment.fromJson(config) for config in jsonData[LRProject.cEnvConfigsName]])
         # commands
-        self.myData[Project.cCommandsName].clear()
-        self.myData[Project.cCommandsName].extend([Commands.fromJson(command) for command in jsonData[Project.cCommandsName]])
+        self.myData[LRProject.cCommandsName].clear()
+        self.myData[LRProject.cCommandsName].extend([LRCommands.fromJson(command) for command in jsonData[LRProject.cCommandsName]])
         
     def getJsonData(self):
         # generate dict for json saving
         jsonData = {}
+        jsonData[LRProject.cVersionName] = LRProject.cVersion
         # base
-        jsonData[Project.cBasePathName] = str(self.myData[Project.cBasePathName])
+        jsonData[LRProject.cBasePathName] = str(self.myData[LRProject.cBasePathName])
         # default environment settings
-        jsonData[Project.cDefaultEnvsName] = EnvConfig.toJson(self.myData[Project.cDefaultEnvsName])
+        jsonData[LRProject.cDefaultEnvsName] = LREnvironment.toJson(self.myData[LRProject.cDefaultEnvsName])
         # environment configs
-        jsonData[Project.cEnvConfigsName] = [EnvConfig.toJson(config) for config in self.myData[Project.cEnvConfigsName]]
+        jsonData[LRProject.cEnvConfigsName] = [LREnvironment.toJson(config) for config in self.myData[LRProject.cEnvConfigsName]]
         # commands
-        jsonData[Project.cCommandsName] = [Commands.toJson(command) for command in self.myData[Project.cCommandsName]]
+        jsonData[LRProject.cCommandsName] = [LRCommands.toJson(command) for command in self.myData[LRProject.cCommandsName]]
 
         return jsonData
 
     def createNew(self, cwd:Path):
-        self.myData[Project.cBasePathName] = cwd
-        self.myData[Project.cDefaultEnvsName] = EnvConfig.EnvironmentConfig()
-        self.myData[Project.cEnvConfigsName].clear()
-        self.myData[Project.cCommandsName].clear()
+        self.myData[LRProject.cBasePathName] = Path(cwd)
+        self.myData[LRProject.cDefaultEnvsName] = LREnvironment()
+        self.myData[LRProject.cEnvConfigsName].clear()
+        self.myData[LRProject.cCommandsName].clear()
         
         self.myJsonPath = None
         self.myName = 'Untitled'
 
     def isValid(self):
         return self.myJsonPath is not None
+
+    @property
+    def version(self):
+        return LRProject.cVersion
+    @property
+    def basePath(self):
+        return self.myData[LRProject.cBasePathName]

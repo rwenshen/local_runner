@@ -1,19 +1,26 @@
 
 from LocalRunner.UI.AttrEditor.AWData import AWData
+
 from LocalRunner.UI.AttrEditor.AWUnsupported import AWUnsupported
+from LocalRunner.UI.AttrEditor.AWPath import AWPath
 
 
 class AWFactory:
-    _awDict = {}
+    __awDict = {}
 
     @staticmethod
-    def RegisterAW(_type, widget):
-        if _type not in AWFactory._awDict:
-            AWFactory._awDict[_type] = widget
-        else:
-            raise('Duplicated type ' + str(_type))
+    def registerAW(awWidget):
+        for _type in AWFactory.__awDict:
+            assert issubclass(awWidget.dataType, _type), 'Type {} has been registered, {} cannot be registered!'.format(_type, awWidget.dataType)
+        AWFactory.__awDict[awWidget.dataType] = awWidget
+        #print('Type {} is registered with widget {}'.format(awWidget.dataType, awWidget))
 
     @staticmethod
-    def CreateWidget(obj, name:str):
+    def createWidget(obj, name:str, parent, dataChangedCb):
         data = AWData(obj, name)
-        return AWUnsupported(data)
+        for _type in AWFactory.__awDict:
+            if data.isType(_type):
+                return AWFactory.__awDict[_type](data, parent, dataChangedCb)
+        return AWUnsupported(data, parent, dataChangedCb)
+
+AWFactory.registerAW(AWPath)
