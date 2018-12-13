@@ -4,15 +4,15 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QTimer
 
-from LocalRunner.Project import Project
+from LocalRunner.LRProject import LRProject
 from LocalRunner.UI.MainWindow import MainWindow
 
-class App:
+class LRApp:
     def __init__(self, workingDir:Path):
         self.myApp =  QApplication([])
         
         # Project
-        self.myProject = Project()
+        self.myProject = LRProject()
         projectFiles = list(workingDir.glob('*.json'))
         loaded = False
         if len(projectFiles) > 0:
@@ -36,7 +36,7 @@ class App:
         newJsonFile = saveDlg.getSaveFileName(
             parent=self.myWindow
             , caption='Save New Project...'
-            , directory=str(self.myProject.myBasePath)
+            , directory=str(self.myProject.basePath)
             , filter='Project Files(*.json)'
         )
 

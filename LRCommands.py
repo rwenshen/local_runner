@@ -7,7 +7,7 @@ def fromJson(jsonData):
 ##################################################################
 # Base class of all commands
 ##################################################################
-class CommandBase:
+class LRCommandBase:
 
     def _GetArg(self, argName, defaultValue = None):
         if argName not in self.myArgs:
@@ -25,13 +25,12 @@ class CommandBase:
         self.myDepandencies = []
 
     def Exec(self):
-        print('Please implement the Exec function of this Command.')
-        raise(RuntimeError())
+        raise NotImplementedError
 
 ##################################################################
 # Command to make link
 #
 ##################################################################
-class CommandMkl(CommandBase):
+class LRCommandMkl(LRCommandBase):
     def __init__(self, name):
         pass
