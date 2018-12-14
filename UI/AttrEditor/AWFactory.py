@@ -1,9 +1,7 @@
 
-from LocalRunner.UI.AttrEditor.AWData import AWData
-
-from LocalRunner.UI.AttrEditor.AWUnsupported import AWUnsupported
-from LocalRunner.UI.AttrEditor.AWPath import AWPath
-
+from .AWData import AWData
+from .AWUnsupported import AWUnsupported
+from .AWPath import AWPath
 
 class AWFactory:
     __awDict = {}

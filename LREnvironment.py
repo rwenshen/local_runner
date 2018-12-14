@@ -1,11 +1,11 @@
 class LREnvironment:
 
-    @classmethod
-    def toJson(command):
+    @staticmethod
+    def toSaveData(env):
         return {}
 
-    @classmethod
-    def fromJson(jsonData):
+    @staticmethod
+    def fromSaveData(saveData):
         return LREnvironment()
 
     def __init__(self):

@@ -1,9 +1,8 @@
 from pathlib import Path
 import json
 
-import LocalRunner.LRPath as LRPath
-from LocalRunner.LREnvironment import LREnvironment
-import LocalRunner.LRCommands as LRCommands
+from .LREnvironment import LREnvironment
+from .Commands.LRCFactory import LRCFactory
 
 class LRProject:
     sDefaultCategories = ['Start', 'Build Code', 'Build Data', 'Misc']
@@ -28,11 +27,12 @@ class LRProject:
             self.myName = self.myJsonPath.stem
             try:
                 jsonData = json.loads(self.myJsonPath.read_text())
-                if LRProject.cVersionName in jsonData and jsonData[LRProject.cVersionName] == LRProject.cVersion:
-                    self.updateFromJsonData(jsonData)
-                    return True
             except:
                 return False
+
+            if LRProject.cVersionName in jsonData and jsonData[LRProject.cVersionName] == LRProject.cVersion:
+                self.fromSaveData(jsonData)
+                return True
 
         return False
 
@@ -43,7 +43,7 @@ class LRProject:
         if self.myJsonPath:
             self.myName = self.myJsonPath.stem
 
-            jsonData = self.getJsonData()
+            jsonData = self.toSaveData()
             jsonOutput = json.dumps(jsonData, sort_keys=True, indent=4, separators=(',', ': '))
             try:
                 self.myJsonPath.write_text(jsonOutput)
@@ -53,32 +53,32 @@ class LRProject:
         
         return False
 
-    def updateFromJsonData(self, jsonData):
+    def fromSaveData(self, saveData):
         # base
-        self.myData[LRProject.cBasePathName] = Path(jsonData[LRProject.cBasePathName])
+        self.myData[LRProject.cBasePathName] = Path(saveData[LRProject.cBasePathName])
         # default environment settings
-        self.myData[LRProject.cDefaultEnvsName] = LREnvironment.fromJson(jsonData[LRProject.cDefaultEnvsName])
+        self.myData[LRProject.cDefaultEnvsName] = LREnvironment.fromSaveData(saveData[LRProject.cDefaultEnvsName])
         # environment configs
         self.myData[LRProject.cEnvConfigsName].clear()
-        self.myData[LRProject.cEnvConfigsName].extend([LREnvironment.fromJson(config) for config in jsonData[LRProject.cEnvConfigsName]])
+        self.myData[LRProject.cEnvConfigsName].extend([LREnvironment.fromSaveData(config) for config in saveData[LRProject.cEnvConfigsName]])
         # commands
         self.myData[LRProject.cCommandsName].clear()
-        self.myData[LRProject.cCommandsName].extend([LRCommands.fromJson(command) for command in jsonData[LRProject.cCommandsName]])
+        self.myData[LRProject.cCommandsName].extend([LRCFactory.fromSaveData(command) for command in saveData[LRProject.cCommandsName]])
         
-    def getJsonData(self):
+    def toSaveData(self):
         # generate dict for json saving
-        jsonData = {}
-        jsonData[LRProject.cVersionName] = LRProject.cVersion
+        saveData = {}
+        saveData[LRProject.cVersionName] = LRProject.cVersion
         # base
-        jsonData[LRProject.cBasePathName] = str(self.myData[LRProject.cBasePathName])
+        saveData[LRProject.cBasePathName] = str(self.myData[LRProject.cBasePathName])
         # default environment settings
-        jsonData[LRProject.cDefaultEnvsName] = LREnvironment.toJson(self.myData[LRProject.cDefaultEnvsName])
+        saveData[LRProject.cDefaultEnvsName] = LREnvironment.toSaveData(self.myData[LRProject.cDefaultEnvsName])
         # environment configs
-        jsonData[LRProject.cEnvConfigsName] = [LREnvironment.toJson(config) for config in self.myData[LRProject.cEnvConfigsName]]
+        saveData[LRProject.cEnvConfigsName] = [LREnvironment.toSaveData(config) for config in self.myData[LRProject.cEnvConfigsName]]
         # commands
-        jsonData[LRProject.cCommandsName] = [LRCommands.toJson(command) for command in self.myData[LRProject.cCommandsName]]
+        saveData[LRProject.cCommandsName] = [LRCFactory.toSaveData(command) for command in self.myData[LRProject.cCommandsName]]
 
-        return jsonData
+        return saveData
 
     def createNew(self, cwd:Path):
         self.myData[LRProject.cBasePathName] = Path(cwd)

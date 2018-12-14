@@ -1,8 +1,8 @@
 from PyQt5.QtWidgets import QDockWidget
 from PyQt5.QtCore import Qt
 
-from LocalRunner.LRProject import LRProject
-from LocalRunner.UI.AttrEditor.AttrEditor import AttributeEditor
+from ..LRProject import LRProject
+from .AttrEditor.AttrEditor import AttributeEditor
 
 class ProjectWindow(QDockWidget):
     def __init__(self, parent):

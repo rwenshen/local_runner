@@ -6,8 +6,8 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QFileDialog
 
-from LocalRunner.UI.AttrEditor.AWBase import awclass
-from LocalRunner.UI.AttrEditor.AWData import AWData
+from .AWBase import awclass
+from .AWData import AWData
 
 @awclass
 class AWPath(QWidget):

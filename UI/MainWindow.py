@@ -3,9 +3,9 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import Qt
 
-from LocalRunner.LRProject import LRProject
-from LocalRunner.UI.OutputWindow import OutputWindow
-from LocalRunner.UI.ProjectWindow import ProjectWindow
+from ..LRProject import LRProject
+from .OutputWindow import OutputWindow
+from .ProjectWindow import ProjectWindow
 
 class MainWindow(QMainWindow):
 

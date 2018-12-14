@@ -4,10 +4,12 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QTimer
 
-from LocalRunner.LRProject import LRProject
-from LocalRunner.UI.MainWindow import MainWindow
+from .LRProject import LRProject
+from .UI.MainWindow import MainWindow
 
 class LRApp:
+
+    
     def __init__(self, workingDir:Path):
         self.myApp =  QApplication([])
         

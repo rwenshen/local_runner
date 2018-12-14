@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QLabel
 
-from LocalRunner.UI.AttrEditor.AWBase import awclass
-from LocalRunner.UI.AttrEditor.AWData import AWData
+from .AWBase import awclass
+from .AWData import AWData
 
 @awclass
 class AWUnsupported(QLabel):
