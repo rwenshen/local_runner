@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtWidgets import QVBoxLayout
-
 from PyQt5.QtCore import pyqtSignal
 
 from .AWFactory import AWFactory

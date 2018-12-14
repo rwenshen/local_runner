@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self, project):
         super().__init__()
-        self.mySettings = QSettings("SHL", "LocalRunner")
+        self.mySettings = QSettings("Shen HuiLiang", "LocalRunner")
 
         self.myProject = project
         self.initUi()
@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
                 | eUpdateProjectEditor
                 | eUpdateOutput
         ):
-        self.setWindowTitle('Project: ' + self.myProject.myName)
+        self.setWindowTitle('LocalRunner: ' + self.myProject.myName)
 
         if filter & MainWindow.eUpdateMenuBar:
             menuBar = self.menuBar()

@@ -6,7 +6,7 @@ from .AttrEditor.AttrEditor import AttributeEditor
 
 class ProjectWindow(QDockWidget):
     def __init__(self, parent):
-        super().__init__('Project Settings', parent)
+        super().__init__(parent.tr('Project Settings'), parent)
         self.setObjectName('ProjectWindow')
         self.myProject = self.parentWidget().myProject
         self.initUi()

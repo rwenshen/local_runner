@@ -11,7 +11,6 @@ class LRApp:
 
     
     def __init__(self, workingDir:Path):
-        self.myApp =  QApplication([])
         
         # Project
         self.myProject = LRProject()
@@ -24,7 +23,8 @@ class LRApp:
             self.myProject.createNew(workingDir)
             QTimer.singleShot(0.1, self.saveNewJson)
 
-        # qt app
+        # qt app and main window
+        self.myApp =  QApplication([])
         self.myWindow = MainWindow(self.myProject)
         self.myWindow.updateUi()
         self.myWindow.show()
@@ -37,9 +37,9 @@ class LRApp:
         saveDlg.setAcceptMode(QFileDialog.AcceptSave)
         newJsonFile = saveDlg.getSaveFileName(
             parent=self.myWindow
-            , caption='Save New Project...'
+            , caption=self.myWindow.tr('Save New Project...')
             , directory=str(self.myProject.basePath)
-            , filter='Project Files(*.json)'
+            , filter=self.myWindow.tr('Project Files')+'(*.json)'
         )
 
         if not newJsonFile[0]:

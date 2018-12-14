@@ -1,7 +1,6 @@
 
 from .AWData import AWData
 from .AWUnsupported import AWUnsupported
-from .AWPath import AWPath
 
 class AWFactory:
     __awDict = {}
@@ -20,5 +19,3 @@ class AWFactory:
             if data.isType(_type):
                 return AWFactory.__awDict[_type](data, parent, dataChangedCb)
         return AWUnsupported(data, parent, dataChangedCb)
-
-AWFactory.registerAW(AWPath)

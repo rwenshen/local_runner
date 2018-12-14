@@ -34,11 +34,16 @@ class AWPath(QWidget):
 
     def onLineChanged(self):
         path = Path(self.myLineEdit.text())
+        warningTitle = self.tr('Warning')
+        msgPart1 = self.tr('The path "')
+        msgPart2 = self.tr('" is not exist!')
+        msgPart3 = self.tr('" is not a directory!')
+
         if not path.exists():
-            QMessageBox.warning(self, 'Warning', 'The path "{}" is not exist!'.format(str(path)))
+            QMessageBox.warning(self, warningTitle, msgPart1 + str(path) + msgPart2)
             self.myLineEdit.setText(str(self.myData.data))
         elif not path.is_dir():
-            QMessageBox.warning(self, 'Warning', 'The path "{}" is not a directory!'.format(str(path)))
+            QMessageBox.warning(self, warningTitle, msgPart1 + str(path) + msgPart3)
             self.myLineEdit.setText(str(self.myData.data))
         else:
             self.changeData(Path(self.myLineEdit.text()))
@@ -46,7 +51,7 @@ class AWPath(QWidget):
     def onButtonClicked(self):
         newDir = QFileDialog.getExistingDirectory(
             self
-            , 'Select Base Path'
+            , self.tr('Select Base Path')
             , str(self.myData.data)
             , QFileDialog.ShowDirsOnly | QFileDialog.DontResolveSymlinks)
         
