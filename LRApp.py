@@ -4,23 +4,21 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QTimer
 
-from .LRProject import LRProject
+from .Core.LRProject import LRProject
 from .UI.MainWindow import MainWindow
 
 class LRApp:
-
-    
+  
     def __init__(self, workingDir:Path):
         
         # Project
-        self.myProject = LRProject()
         projectFiles = list(workingDir.glob('*.json'))
-        loaded = False
+        self.myProject = None
         if len(projectFiles) > 0:
-            loaded = self.myProject.load(projectFiles[0])
-
-        if not loaded:
-            self.myProject.createNew(workingDir)
+            self.myProject = LRProject.load(projectFiles[0])
+        if self.myProject is None:
+            self.myProject = LRProject()
+            self.myProject.myBaseDir = workingDir
             QTimer.singleShot(0.1, self.saveNewJson)
 
         # qt app and main window
@@ -38,7 +36,7 @@ class LRApp:
         newJsonFile = saveDlg.getSaveFileName(
             parent=self.myWindow
             , caption=self.myWindow.tr('Save New Project...')
-            , directory=str(self.myProject.basePath)
+            , directory=str(self.myProject.myBaseDir)
             , filter=self.myWindow.tr('Project Files')+'(*.json)'
         )
 

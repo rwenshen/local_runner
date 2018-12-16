@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import Qt
 
-from ..LRProject import LRProject
+from ..Core.LRProject import LRProject
 from .OutputWindow import OutputWindow
 from .ProjectWindow import ProjectWindow
 
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
             menuBar = self.menuBar()
             menuBar.clear()
             menuDict = {}
-            for cat in LRProject.sDefaultCategories:
+            for cat in ['Start', 'Build Code', 'Build Data', 'Misc']:
                 menuDict[cat] = menuBar.addMenu(cat)
 
         if filter & MainWindow.eUpdateProjectEditor:

@@ -1,9 +1,5 @@
 class LRCFactory:
 
     @staticmethod
-    def toSaveData(lrc):
-        return {}
-
-    @staticmethod
-    def fromSaveData(saveData):
+    def createFromSaveData(data:dict):
         None

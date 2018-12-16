@@ -1,7 +1,8 @@
-class LRCBase:
+from ..Core.LRObject import LRObject
 
-    def __init__(self, args):
-        self.myArgs = args
-
+class LRCBase(LRObject):
+    def registerPropertyDefs(self):
+        pass
+        
     def Exec(self):
         raise NotImplementedError

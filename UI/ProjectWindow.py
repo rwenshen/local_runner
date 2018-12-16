@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QDockWidget
 from PyQt5.QtCore import Qt
 
-from ..LRProject import LRProject
+from ..Core.LRProject import LRProject
 from .AttrEditor.AttrEditor import AttributeEditor
 
 class ProjectWindow(QDockWidget):
@@ -15,7 +15,7 @@ class ProjectWindow(QDockWidget):
         self.setAllowedAreas(Qt.LeftDockWidgetArea)
         self.setFeatures(QDockWidget.NoDockWidgetFeatures)
 
-        self.myAttrEditor = AttributeEditor(self.myProject.myData, parent=self)
+        self.myAttrEditor = AttributeEditor(self.myProject, parent=self)
         self.myAttrEditor.dataChanged.connect(self.onDataChanged)
         self.setWidget(self.myAttrEditor)
 
