@@ -6,10 +6,11 @@ from PyQt5.QtCore import pyqtSignal
 from .AWFactory import AWFactory
 
 class AttributeEditor(QScrollArea):
-    def __init__(self, obj, parent=None, ignoreList:list=[]):
+    def __init__(self, obj, title:str='Object', parent=None):
         super().__init__(parent)
         self.myObj = obj
-        self.myIgnoreList = ignoreList
+        self.myTitle = title
+        self.myDict = {title:obj}
         self.initUi()
 
     def initUi(self):
@@ -28,10 +29,9 @@ class AttributeEditor(QScrollArea):
                 widget.deleteLater()
             else:
                 self.myLayout.removeItem(item)
-                
-        for name in self.iterObj():
-            if name not in self.myIgnoreList:
-                self.myLayout.addWidget(AWFactory.createWidget(self.myObj, name, self, self.dataChanged.emit))
+        
+        widget = AWFactory.createWidget(self.myDict, self.myTitle, self, self.dataChanged.emit)
+        self.myLayout.addWidget(widget)
         self.myLayout.addStretch(0)
     
     dataChanged = pyqtSignal()

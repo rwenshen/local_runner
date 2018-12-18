@@ -1,16 +1,12 @@
 from PyQt5.QtWidgets import QWidget
 
-from .AWBase import awclass
 from .AWData import AWData
+from .AWDefault import AWDefault
 from ...Core.LRObject import LRObject
 
-@awclass
-class AWLro(QWidget):
+class AWLro(AWDefault):
     dataType = LRObject
 
-    def __init__(self, parent):
-        super().__init__(parent)
-        self.initUi()
-
-    def initUi(self):
-        pass
+    def iterObj(self):
+        for name in self.myData.data:
+            yield(name)

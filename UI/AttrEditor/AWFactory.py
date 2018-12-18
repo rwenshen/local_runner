@@ -1,6 +1,7 @@
 
 from .AWData import AWData
-from .AWUnsupported import AWUnsupported
+from . import AWDefault
+from . import AWUnsupported
 
 class AWFactory:
     __awDict = {}
@@ -14,6 +15,8 @@ class AWFactory:
     @staticmethod
     def createWidget(obj, name:str, parent, dataChangedCb):
         data = AWData(obj, name)
+
+        # find potential type
         potentialTypes = []
         for _type in AWFactory.__awDict:
             if data.isType(_type):
@@ -22,6 +25,12 @@ class AWFactory:
         for _type in potentialTypes:
             if targetType is None or (issubclass(_type, targetType) and not issubclass(targetType, _type)):
                 targetType = _type
+
+        # find widget
+        widgetType = AWUnsupported.AWUnsupported
         if targetType is not None:
-            return AWFactory.__awDict[_type](data, parent, dataChangedCb)
-        return AWUnsupported(data, parent, dataChangedCb)
+            widgetType = AWFactory.__awDict[targetType]
+        elif AWDefault.AWDefault.isSupported(data):
+            widgetType = AWDefault.AWDefault
+
+        return widgetType(data, parent, dataChangedCb)

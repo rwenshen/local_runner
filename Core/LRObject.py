@@ -22,7 +22,7 @@ class LRObject:
         self.registerPropertyDefs()
         self.__data = {}
         for pDef in self.__properties:
-            self.__data[pDef.myName] = pDef.fromSaveData(saveData.get(pDef.myName))          
+            self.__data[pDef.myName] = pDef.fromSaveData(saveData.get(pDef.myName))
         self.__parent = parent
 
     def registerPropertyDefs(self):
@@ -34,10 +34,15 @@ class LRObject:
         return self.__data[key]
     def __setitem__(self, key, value):
         self.__data[key] = value
-    def iterProperties(self):
+    def __iter__(self):
         for pDef in self.__properties:
-            yield pDef.myName, self.__data[pDef.myName]
-         
+            yield pDef.myName
+    def __contains__(self, name):
+        for pDef in self.__properties:
+            if pDef.myName == name:
+                return True
+        return False
+
     @property
     def myParent(self):
         return self.__parent
