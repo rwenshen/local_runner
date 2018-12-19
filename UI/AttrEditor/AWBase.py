@@ -1,6 +1,8 @@
 from .AWData import AWData
 from PyQt5.QtWidgets import QWidget
 
+from . import AWFactory
+
 class AWMetaClass(type(QWidget)):
     def __new__(cls, name, bases, attrs):
         hasQWidgetBase = False
@@ -18,5 +20,8 @@ class AWMetaClass(type(QWidget)):
                 aw.myCb = dataChangedCb
                 originalInit(aw, parent)
             attrs['__init__'] = newInit
-
-        return type(QWidget).__new__(cls, name, bases, attrs)
+        
+        finalType = type(QWidget).__new__(cls, name, bases, attrs)
+        if 'dataType' in attrs:
+            AWFactory.AWFactory.registerAW(finalType)
+        return finalType

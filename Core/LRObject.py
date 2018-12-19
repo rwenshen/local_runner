@@ -1,8 +1,9 @@
 from enum import Enum, unique
 
+from .LRObjectMeta import LRObjectMetaClass
 from .LRPropertyDefBase import LRPropertyDefBase
 
-class LRObject:
+class LRObject(metaclass=LRObjectMetaClass):
     '''
     Base class for all object in LocalRunner project.
     Derived classed need to implement property "myPropertyDefines"

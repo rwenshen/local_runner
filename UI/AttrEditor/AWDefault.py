@@ -1,11 +1,11 @@
 from PyQt5.QtWidgets import QGroupBox
 from PyQt5.QtWidgets import QVBoxLayout
 
-from .AWBase import AWMetaClass
 from .AWData import AWData
 from . import AWFactory
+from . import AWBase
 
-class AWDefault(QGroupBox, metaclass=AWMetaClass):
+class AWDefault(QGroupBox, metaclass=AWBase.AWMetaClass):
     def __init__(self, parent):
         super().__init__(self.myData.myName, parent)
         self.initUi()

@@ -1,11 +1,11 @@
-from .LRObject import LRObject
+from . import LRObject
 
 class LROFactory:
     __lroDict = {}
 
     @staticmethod
     def registerLRO(lroClass:type):
-        if not issubclass(lroClass, LRObject):
+        if not issubclass(lroClass, LRObject.LRObject):
             raise TypeError('"{}" is not an LRObject!'.format(lroClass))
         className = str(lroClass)
         assert className not in LROFactory.__lroDict, '"{}" has been registered!'.format(lroClass)
@@ -14,8 +14,8 @@ class LROFactory:
 
     @staticmethod
     def createLRO(saveData:dict, _expectType:type, needDefault:bool=False):
-        if saveData is not None and LRObject.cTypePropertyName in saveData:
-            lroTypeName = saveData[LRObject.cTypePropertyName]
+        if saveData is not None and LRObject.LRObject.cTypePropertyName in saveData:
+            lroTypeName = saveData[LRObject.LRObject.cTypePropertyName]
             if lroTypeName in LROFactory.__lroDict:
                 lroType = LROFactory.__lroDict[lroTypeName]
                 if issubclass(lroType, _expectType):
