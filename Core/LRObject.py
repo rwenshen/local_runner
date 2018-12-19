@@ -53,6 +53,3 @@ class LRObject:
         for pDef in self.__properties:
             saveData[pDef.myName] = pDef.toSaveData(self[pDef.myName])
         return saveData
-
-    
-        

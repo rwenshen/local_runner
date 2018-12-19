@@ -1,14 +1,22 @@
 from .AWData import AWData
 from PyQt5.QtWidgets import QWidget
 
-def awclass(cls):
-    if not issubclass(cls, QWidget):
-        raise TypeError('awclass can only be used on QWidget class.')
+class AWMetaClass(type(QWidget)):
+    def __new__(cls, name, bases, attrs):
+        hasQWidgetBase = False
+        for base in bases:
+            if issubclass(base, QWidget):
+                hasQWidgetBase = True
+                break
+        if not hasQWidgetBase:
+            raise TypeError('AWMetaClass can only be used on QWidget class.')
+        
+        if '__init__' in attrs:
+            originalInit = attrs['__init__']
+            def newInit(aw, data:AWData, parent, dataChangedCb):
+                aw.myData = data
+                aw.myCb = dataChangedCb
+                originalInit(aw, parent)
+            attrs['__init__'] = newInit
 
-    class AWClass(cls):
-        def __init__(self, data:AWData, parent, dataChangedCb):
-            self.myData = data
-            self.myCb = dataChangedCb
-            super().__init__(parent)
-            
-    return AWClass
+        return type(QWidget).__new__(cls, name, bases, attrs)

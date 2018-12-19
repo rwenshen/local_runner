@@ -6,11 +6,10 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import QFileDialog
 
-from .AWBase import awclass
+from .AWBase import AWMetaClass
 from .AWData import AWData
 
-@awclass
-class AWPath(QWidget):
+class AWPath(QWidget, metaclass=AWMetaClass):
     dataType = Path
 
     def __init__(self, parent):

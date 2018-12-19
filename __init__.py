@@ -11,7 +11,6 @@ from pathlib import Path
 from .LRApp import LRApp
 from .Commands.LRCBase import LRCBase
 from .Commands.LRCFactory import LRCFactory
-from .UI.AttrEditor.AWBase import awclass
 from .UI.AttrEditor.AWFactory import AWFactory
 
 def registerCustomLRC(lrcClass):
