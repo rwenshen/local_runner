@@ -15,8 +15,11 @@ class MainWindow(QMainWindow):
 
     def __init__(self, project):
         super().__init__()
-        self.mySettings = QSettings("Shen HuiLiang", "LocalRunner")
-
+        self.mySettings = QSettings(
+            QSettings.IniFormat,
+            QSettings.UserScope,
+            "Shen HuiLiang",
+            "LocalRunner")
         self.myProject = project
         self.initUi()
 
