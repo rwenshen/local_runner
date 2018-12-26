@@ -13,6 +13,12 @@ class Settings:
             Settings.__appName,
             Settings.__settingsName)
 
-#             QCoreApplication::setOrganizationName("MySoft");
-#    QCoreApplication::setOrganizationDomain("mysoft.com");
-#    QCoreApplication::setApplicationName("Star Runner");
+    def save(self):
+        self.myMainSettings.setValue("geometry", self.myMainWindow.saveGeometry())
+        self.myMainSettings.setValue("windowState", self.myMainWindow.saveState())
+
+    def restore(self):
+        if self.myMainSettings.value("geometry") is not None:
+            self.myMainWindow.restoreGeometry(self.myMainSettings.value("geometry"))
+        if self.myMainSettings.value("windowState") is not None:
+            self.myMainWindow.restoreState(self.myMainSettings.value("windowState"))

@@ -4,6 +4,7 @@ from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import Qt
 
 from ..Core.LRProject import LRProject
+from .Settings import Settings
 from .OutputWindow import OutputWindow
 from .ProjectWindow import ProjectWindow
 
@@ -15,19 +16,12 @@ class MainWindow(QMainWindow):
 
     def __init__(self, project):
         super().__init__()
-        self.mySettings = QSettings(
-            QSettings.IniFormat,
-            QSettings.UserScope,
-            "Shen HuiLiang",
-            "LocalRunner")
         self.myProject = project
+        self.mySettings = Settings(self)
         self.initUi()
 
     def initUi(self):
-        if self.mySettings.value("geometry") is not None:
-            self.restoreGeometry(self.mySettings.value("geometry"))
-        if self.mySettings.value("windowState") is not None:
-            self.restoreState(self.mySettings.value("windowState"))
+        self.mySettings.restore()
 
         # Center output window
         self.myOutputWindow = OutputWindow(self)
@@ -57,6 +51,5 @@ class MainWindow(QMainWindow):
             self.myOutputWindow.updateUi()
 
     def closeEvent(self, event):
-        self.mySettings.setValue("geometry", self.saveGeometry())
-        self.mySettings.setValue("windowState", self.saveState())
+        self.mySettings.save()
         QMainWindow.closeEvent(self, event)
