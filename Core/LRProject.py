@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import uuid
 
 from .LRObject import LRObject
 from .LROFactory import LROFactory
@@ -9,6 +10,8 @@ from ..Commands.LRCBase import LRCBase
 
 class LRProject(LRObject):
     
+    __cUUIDKey = '__uuid'
+
     __cVersion = '0.0.1'
     __cVersionName = '__version'
     __cBaseDirName = 'Base Directory'
@@ -17,6 +20,7 @@ class LRProject(LRObject):
         super().__init__(saveData)
         self.myJsonPath = None
         self.myName = 'Untitled'
+        self.myGuid = uuid.uuid1()
 
     @lrproperty(__cBaseDirName, Path)
     @lrproperty_lro('Default Config', LRConfig)
@@ -34,11 +38,15 @@ class LRProject(LRObject):
                 return None
 
             if LRProject.__cVersionName in jsonData and jsonData[LRProject.__cVersionName] == LRProject.__cVersion:
+                uuidInFile = uuid.UUID(jsonData[LRProject.__cUUIDKey])
                 del jsonData[LRProject.__cVersionName]
+                del jsonData[LRProject.__cUUIDKey]
+
                 lrp = LROFactory.createLRO(jsonData, LRProject)
                 if lrp is not None:
                     lrp.myJsonPath = jsonPath
                     lrp.myName = jsonPath.stem
+                    lrp.myGuid = uuidInFile
                     return lrp
         return None
 
@@ -49,7 +57,9 @@ class LRProject(LRObject):
         if self.myJsonPath:
             self.myName = self.myJsonPath.stem
 
-            jsonData = {LRProject.__cVersionName:LRProject.__cVersion}
+            jsonData = {
+                LRProject.__cVersionName:LRProject.__cVersion,
+                LRProject.__cUUIDKey:str(self.myGuid) }
             jsonData.update(self.mySaveData)
             jsonOutput = json.dumps(jsonData, sort_keys=True, indent=4, separators=(',', ': '))
             try:
