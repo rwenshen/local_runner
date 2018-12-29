@@ -17,8 +17,13 @@ class LRObject(metaclass=LRObjectMetaClass):
     '''
     
     cTypePropertyName = '__type'
+    cDescriptionPropertyName = '__description'
 
     def __init__(self, saveData={}, parent=None):
+        if LRObject.cDescriptionPropertyName in saveData:
+            self.mDescription = saveData[LRObject.cDescriptionPropertyName]
+        else:
+            self.mDescription = ''
         self.__properties = []
         self.registerPropertyDefs()
         self.__data = {}
@@ -50,7 +55,11 @@ class LRObject(metaclass=LRObjectMetaClass):
 
     @property
     def mySaveData(self):
-        saveData = {LRObject.cTypePropertyName:str(type(self))}
+        saveData = {
+                LRObject.cTypePropertyName:str(type(self)), 
+                LRObject.cDescriptionPropertyName:self.mDescription, 
+            }
+        
         for pDef in self.__properties:
             saveData[pDef.myName] = pDef.toSaveData(self[pDef.myName])
         return saveData

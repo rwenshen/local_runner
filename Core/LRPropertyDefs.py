@@ -1,5 +1,4 @@
 from .LRPropertyDefBase import LRPropertyDefBase
-from .LRObject import LRObject
 from .LROFactory import LROFactory
 
 __all__ = [
@@ -12,10 +11,10 @@ class lrproperty(LRPropertyDefBase):
     def fromSaveData(self, saveData:str):
         if saveData is None:
             return self.myType()
-        return self.myType(saveData)            
+        return self.myType(saveData)
 
     def toSaveData(self, data):
-        return str(data)            
+        return str(data)
 
 class lrproperty_lro(LRPropertyDefBase):
     def fromSaveData(self, saveData:dict):
