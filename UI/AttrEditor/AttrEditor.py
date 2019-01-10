@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtCore import pyqtSignal
 
 from .AWFactory import AWFactory
-from .AWLro import AWLro
-from .AWPath import AWPath
 
 class AttributeEditor(QScrollArea):
     def __init__(self, obj, title:str='Object', parent=None):

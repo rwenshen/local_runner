@@ -8,20 +8,14 @@ Users can add a serias commands (predefined or customized), and trigger these co
 import os
 from pathlib import Path
 
-from .LRApp import LRApp
-from .Commands.LRCBase import LRCBase
-from .Commands.LRCFactory import LRCFactory
-from .UI.AttrEditor.AWFactory import AWFactory
+import kivy
+kivy.require('1.10.1')
 
-def registerCustomLRC(lrcClass):
-    pass
-
-def registerCustomAW(awClass):
-    pass
+from .UI.App import LRApp
 
 def run(workingDir:Path=Path(os.getcwd())):
     assert workingDir.exists(), 'workingDir is NOT existant!'
     assert workingDir.is_dir(), 'workingDir is NOT a directory!'
 
     currentApp = LRApp(workingDir)
-    currentApp.exec()
+    currentApp.run()
