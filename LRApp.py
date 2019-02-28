@@ -4,7 +4,6 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtCore import QTimer
 
-from .Core.LRProject import LRProject
 from .UI.MainWindow import MainWindow
 
 class LRApp:

@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import QSettings
 from PyQt5.QtCore import Qt
 
-from ..Core.LRProject import LRProject
 from .Settings import Settings
 from .OutputWindow import OutputWindow
 from .ProjectWindow import ProjectWindow

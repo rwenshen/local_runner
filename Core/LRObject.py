@@ -1,10 +1,31 @@
 from enum import Enum, unique
 
-from .LRObjectMeta import LRObjectMetaClass
-from .LRPropertyDefBase import LRPropertyDefBase
+from .LROFactory import LROFactory
+
+class LRObjectMetaClass(type):
+
+    @staticmethod
+    def registerLRO(finalType, baseTypeName, needInstanceList):
+        LROFactory.registerLRO(finalType, baseTypeName, needInstanceList)
+
+    __baseTypeName = 'LRObject'
+    __needInstanceList = False
+    
+    def __new__(cls, name, bases, attrs):
+        finalType = type.__new__(cls, name, bases, attrs)
+        LRObjectMetaClass.registerLRO(finalType
+            , LRObjectMetaClass.__baseTypeName
+            , LRObjectMetaClass.__needInstanceList)
+        return finalType
 
 class LRObject(metaclass=LRObjectMetaClass):
+    pass
+    
+    
     '''
+from .LRPropertyDefBase import LRPropertyDefBase
+
+
     Base class for all object in LocalRunner project.
     Derived classed need to implement property "myPropertyDefines"
     Example
@@ -14,7 +35,6 @@ class LRObject(metaclass=LRObjectMetaClass):
         @lrproperty_list(lrproperty('p3', str))
         def registerPropertyDefs(self):
             pass
-    '''
     
     cTypePropertyName = '__type'
     cDescriptionPropertyName = '__description'
@@ -63,3 +83,4 @@ class LRObject(metaclass=LRObjectMetaClass):
         for pDef in self.__properties:
             saveData[pDef.myName] = pDef.toSaveData(self[pDef.myName])
         return saveData
+    '''
