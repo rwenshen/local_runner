@@ -17,3 +17,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     @property
     def cmdName(self):
         return self.__class__.__name__
+
+    
+    def execute(self):
+        raise NotImplementedError
