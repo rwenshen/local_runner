@@ -5,8 +5,8 @@ from .LROFactory import LROFactory
 class LRObjectMetaClass(type):
 
     @staticmethod
-    def registerLRO(finalType, baseTypeName, needInstanceList):
-        LROFactory.registerLRO(finalType, baseTypeName, needInstanceList)
+    def registerLRO(finalType, baseTypeName, needInstanceList, ignoreList=[]):
+        LROFactory.registerLRO(finalType, baseTypeName, needInstanceList, ignoreList)
 
     __baseTypeName = 'LRObject'
     __needInstanceList = False
