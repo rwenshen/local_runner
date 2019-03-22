@@ -18,7 +18,7 @@ class LROFactory:
             lroSubDict[className] = lroClass()
         else:
             lroSubDict[className] = lroClass
-        print('"{}" is registered'.format(lroClass))
+        #print('"{}" is registered'.format(lroClass))
 
     @staticmethod
     def findList(baseTypeName):
