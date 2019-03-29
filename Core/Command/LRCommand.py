@@ -22,13 +22,16 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     
     def __init__(self):
         self.__myArgs=[]
+        self.initArgs()
 
     @property
     def cmdName(self):
         return self.__class__.__name__
 
-    def addArg(self, arg:LRCArg):
-        self.__myArgs.append(arg)
+    def addArg(self, *args, **kwargs):
+        self.__myArgs.append(LRCArg(args, kwargs))
+    def initArgs(self):
+        raise NotImplementedError
 
     def execute(self):
         raise NotImplementedError

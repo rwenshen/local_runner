@@ -1,6 +1,10 @@
 import argparse
 from ..Core.LROFactory import LROFactory
 
+class __LRCArgHook:
+    def __init__(self):
+        
+
 class LRCmd:
     
     __cmdBaseClassName = 'LRCommand'
@@ -15,13 +19,19 @@ class LRCmd:
             self.__myCmdNameList.append(lrc.__class__.__name__)
 
     def initialize(self):
-
+        # descriptions
         argParser = argparse.ArgumentParser(
             description=self.myDescription,
         )
 
+        # commands
         argParser.add_argument('cmd', choices=self.__myCmdNameList, help='Command Name')
 
+        # command arguments
+
+
+
+        # final parsing
         self.__myArgs = argParser.parse_args()
 
     def run(self):
