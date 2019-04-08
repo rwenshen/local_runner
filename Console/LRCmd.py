@@ -3,7 +3,7 @@ from ..Core.LROFactory import LROFactory
 
 class __LRCArgHook:
     def __init__(self):
-        
+        pass
 
 class LRCmd:
     
@@ -19,6 +19,9 @@ class LRCmd:
             self.__myCmdNameList.append(lrc.__class__.__name__)
 
     def initialize(self):
+        # no commands defined
+        assert len(self.__myCmdNameList) > 0
+
         # descriptions
         argParser = argparse.ArgumentParser(
             description=self.myDescription,

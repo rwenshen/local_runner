@@ -1,5 +1,6 @@
 from ..LRObject import LRObjectMetaClass, LRObject
 from .CommandArg.LRCArg import LRCArg
+from ..LROFactory import LROFactory
 
 class LRCommandMetaClass(LRObjectMetaClass):
 
@@ -28,8 +29,8 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def cmdName(self):
         return self.__class__.__name__
 
-    def addArg(self, *args, **kwargs):
-        self.__myArgs.append(LRCArg(args, kwargs))
+    def addArg(self, argName:str):
+        self.__myArgs.append(LROFactory.find('LRCArg', argName))
     def initArgs(self):
         raise NotImplementedError
 
