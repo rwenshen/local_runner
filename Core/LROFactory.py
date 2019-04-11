@@ -32,6 +32,12 @@ class LROFactory:
             return LROFactory.__lroDict[baseTypeName].get(typeName, None)
         return None
 
+    @staticmethod
+    def contain(baseTypeName, typeName):
+        if baseTypeName in LROFactory.__lroDict:
+            return LROFactory.__lroDict[baseTypeName].get(typeName, None) is not None
+        return False
+
 #    @staticmethod
 #    def createLRO(saveData:dict, _expectType:type, needDefault:bool=False):
 #        if saveData is not None and LRObject.LRObject.cTypePropertyName in saveData:

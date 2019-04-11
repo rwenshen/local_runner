@@ -29,8 +29,13 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def cmdName(self):
         return self.__class__.__name__
 
+    def iterArgs(self):
+        for arg in self.__myArgs:
+            yield arg
+
     def addArg(self, argName:str):
-        self.__myArgs.append(LROFactory.find('LRCArg', argName))
+        assert LROFactory.contain('LRCArg', argName), 'Argument "{}" is not defined.'.format(argName)
+        self.__myArgs.append(argName)
     def initArgs(self):
         raise NotImplementedError
 
