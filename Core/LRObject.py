@@ -5,18 +5,23 @@ from .LROFactory import LROFactory
 class LRObjectMetaClass(type):
 
     @staticmethod
-    def registerLRO(finalType, baseTypeName, needInstanceList, ignoreList=[]):
-        LROFactory.registerLRO(finalType, baseTypeName, needInstanceList, ignoreList)
+    def newImple(cls, name, bases, attrs):
+        finalType = type.__new__(cls, name, bases, attrs)
+        LROFactory.registerLRO(finalType, cls)
+        return finalType
 
-    __baseTypeName = 'LRObject'
-    __needInstanceList = False
+    @staticmethod
+    def getBaseClassName():
+        return 'LRObject'
+    @staticmethod
+    def isNeedInstance():
+        return False
+    @staticmethod
+    def getIgnoreList():
+        return []
     
     def __new__(cls, name, bases, attrs):
-        finalType = type.__new__(cls, name, bases, attrs)
-        LRObjectMetaClass.registerLRO(finalType
-            , LRObjectMetaClass.__baseTypeName
-            , LRObjectMetaClass.__needInstanceList)
-        return finalType
+        return LRObjectMetaClass.newImple(cls, name, bases, attrs)
 
 class LRObject(metaclass=LRObjectMetaClass):
     pass

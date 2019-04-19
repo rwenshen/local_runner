@@ -3,8 +3,12 @@ class LROFactory:
     __lroDict = {}
 
     @staticmethod
-    def registerLRO(lroClass:type, baseTypeName:str, needInstanceList:bool, ignoreList=[]):
-        # base class need not be registered
+    def registerLRO(lroClass, metaClass):
+        baseTypeName = metaClass.getBaseClassName()
+        needInstanceList = metaClass.isNeedInstance()
+        ignoreList = metaClass.getIgnoreList()
+
+        # base class should not be registered
         if lroClass.__name__ == baseTypeName or lroClass.__name__ in ignoreList:
             return
 

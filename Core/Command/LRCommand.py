@@ -4,20 +4,15 @@ from ..LROFactory import LROFactory
 
 class LRCommandMetaClass(LRObjectMetaClass):
 
-    baseClassList = [
-        'LRCommand'
-    ]
-
-    __baseTypeName = 'LRCommand'
-    __needInstanceList = True
+    @staticmethod
+    def getBaseClassName():
+        return 'LRCommand'
+    @staticmethod
+    def isNeedInstance():
+        return True
 
     def __new__(cls, name, bases, attrs):
-        finalType = type.__new__(cls, name, bases, attrs)
-        LRCommandMetaClass.registerLRO(finalType
-            , LRCommandMetaClass.__baseTypeName
-            , LRCommandMetaClass.__needInstanceList
-            , ignoreList=LRCommandMetaClass.baseClassList)
-        return finalType
+        return LRCommandMetaClass.newImple(cls, name, bases, attrs)
 
 class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     

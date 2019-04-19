@@ -1,5 +1,5 @@
 from .LRCommand import LRCommandMetaClass
-__all__ = LRCommandMetaClass.baseClassList
+__all__ = ['LRCommand']
 __all__.append('LRCArg')
 
 from .LRCommand import LRCommand

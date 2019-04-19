@@ -2,17 +2,15 @@ from ...LRObject import LRObjectMetaClass, LRObject
 
 class LRCArgMetaClass(LRObjectMetaClass):
 
-    __baseTypeName = 'LRCArg'
-    __needInstanceList = True
+    @staticmethod
+    def getBaseClassName():
+        return 'LRCArg'
+    @staticmethod
+    def isNeedInstance():
+        return True
 
     def __new__(cls, name, bases, attrs):
-        finalType = type.__new__(cls, name, bases, attrs)
-
-        LRCArgMetaClass.registerLRO(finalType
-            , LRCArgMetaClass.__baseTypeName
-            , LRCArgMetaClass.__needInstanceList)
-            
-        return finalType
+        return LRCArgMetaClass.newImple(cls, name, bases, attrs)
 
 class LRCArg(LRObject, metaclass=LRCArgMetaClass):
     def __init__(self):
