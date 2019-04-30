@@ -17,6 +17,9 @@ class LRObjectMetaClass(type):
     def isNeedInstance():
         return False
     @staticmethod
+    def isSingleton():
+        return False
+    @staticmethod
     def getIgnoreList():
         return []
     

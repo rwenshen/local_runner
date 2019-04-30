@@ -6,6 +6,7 @@ class LROFactory:
     def registerLRO(lroClass, metaClass):
         baseTypeName = metaClass.getBaseClassName()
         needInstanceList = metaClass.isNeedInstance()
+        isSingleton = metaClass.isSingleton()
         ignoreList = metaClass.getIgnoreList()
 
         # base class should not be registered
@@ -18,7 +19,9 @@ class LROFactory:
 
         className = lroClass.__name__
         assert className not in lroSubDict, '"{}" has been registered!'.format(lroClass)
-        if needInstanceList:
+        if isSingleton:
+            assert len(lroSubDict) > 0, '"{}" can only has one instance!'.format(baseTypeName)
+        if needInstanceList or isSingleton:
             lroSubDict[className] = lroClass()
         else:
             lroSubDict[className] = lroClass
