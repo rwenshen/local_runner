@@ -1,18 +1,15 @@
 import argparse
-from .LRCmdSettings import LRCmdSettings
 from ..Core.Command import *
 from ..Core.LREnvironments import LREnvironments
-
-class __LRCArgHook:
-    def __init__(self):
-        pass
+from . import LRConsoleCommands
 
 class LRCmd:
     
     def __init__(self):
         self.__collectCommandsInfo()
-        self.__settings = LRCmdSettings()
-        #LREnvironments.setDefaultEnv()
+        # Console Environments
+        LREnvironments.setDefaultEnv(AUTO_SHORT_NAME_ENABLE=True)
+        LREnvironments.setDefaultEnv(AUTO_SHORT_NAME_IGNORE_LEN=3)
 
     def __collectCommandsInfo(self):
         self.__myCmdNameList = []
@@ -39,6 +36,7 @@ class LRCmd:
         cmd = LRCommand.getCmd(self.__myArgs.cmd)
         cmdParser = LRCmd.__parseCmdArgs(cmd)
         args = cmdParser.parse_args(self.__myArgs.cmd_args)
+        print(args)
         cmd.execute(args)
     
     @staticmethod
@@ -52,34 +50,52 @@ class LRCmd:
 
     @staticmethod
     def __parseCmdArgs(cmd):
+        
         cmdArgParser = argparse.ArgumentParser(
             description=cmd.myDescription,
             prog=cmd.myName,
-            add_help=False
+            add_help=False,
+            formatter_class=argparse.RawTextHelpFormatter
         )
+
+        shortNameDict = {}
         for arg in cmd.iterArgs():
             if arg.myIsPlacement:
-                cmdArgParser.add_argument(arg.myName,
-                                        choices=arg.myChoices,
-                                        type=arg.myType,
-                                        help=arg.myDescription)
+                LRCmd.__addPlacementArg(cmdArgParser, arg)
             else:
-                cmdArgParser.add_argument('--'+arg.myName,
-                                        choices=arg.myChoices,
-                                        default=arg.myDefault,
-                                        type=arg.myType,
-                                        help=arg.myDescription)
+                LRCmd.__addOptionalArg(cmdArgParser, arg, shortNameDict)
+
         return cmdArgParser
 
-class commandArg(LRCArg):
-    '''The command for help.'''
-    @LRCArg.argPlacement()
-    def defineArgs(self):
-        pass
-class help(LRCommand):
-    '''Give the help information of the specific command.'''
-    def initArgs(self):
-        self.addArg('commandArg')
+    @staticmethod
+    def __addPlacementArg(parser, arg):
+        parser.add_argument(arg.myName,
+                            choices=arg.myChoices,
+                            type=arg.myType,
+                            help=arg.myDescription)
+    @staticmethod
+    def __addOptionalArg(parser, arg, shortNameDict):
 
-    def execute(self, args):
-        LRCmd.printHelp(args.command)
+        #if arg.myChoices is None:
+
+        parser.add_argument('-'+arg.myName,
+                            choices=arg.myChoices,
+                            default=arg.myDefault,
+                            type=arg.myType,
+                            help=arg.myDescription)
+
+    @staticmethod
+    def __addOptionalArgImpl(parser, name, type, default, help, shortNameDict):
+        needAutoShortName = LREnvironments.singleton().AUTO_SHORT_NAME_ENABLE
+        shortIgnoreLen = LREnvironments.singleton().AUTO_SHORT_NAME_IGNORE_LEN
+
+        if needAutoShortName and len(name) > shortIgnoreLen:
+            #shortName = 
+            flags = [
+                '-'+'',
+                '--'+name]
+
+
+        parser.add_argument(*flags, **settings)
+        
+

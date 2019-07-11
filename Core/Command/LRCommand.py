@@ -17,7 +17,6 @@ class LRCommandMetaClass(LRObjectMetaClass):
 
 class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     
-
     @staticmethod
     def getCmdList():
         return LROFactory.findList(LRCommand.__name__)
@@ -26,12 +25,21 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def getCmd(cmdName:str):
         return LROFactory.find(LRCommand.__name__, cmdName)
 
-    def __init__(self):
-        self.__description = self.__doc__
-        if self.__description is None:
-            self.__description = 'Command: ' + self.__class__.__name__
+    def __init__(self):        
         self.__myArgs = []
-        self.initArgs()
+        self.__myCategories = []
+        self.initialize()
+
+        cat = ''
+        if len(self.myCategories) > 0:
+            cat = '/'.join(self.__myCategories)
+            cat += '/'
+        self.__description = 'Command: {}{}'.format(
+                                    cat,
+                                    self.__class__.__name__)
+        if self.__doc__ is not None:
+            self.__description += '\n\t'
+            self.__description += self.__doc__
 
     @property
     def myName(self):
@@ -39,15 +47,31 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     @property
     def myDescription(self):
         return self.__description
+    @property
+    def myCategories(self):
+        return self.__myCategories
 
     def iterArgs(self):
         for argName in self.__myArgs:
             yield LRCArg.getArg(argName)
 
-    def addArg(self, argName:str):
-        assert LRCArg.doesArgExist(argName), 'Argument "{}" is not defined.'.format(argName)
-        self.__myArgs.append(argName)
-    def initArgs(self):
+    def addArg(argName:str):
+        def decorator(func):
+            def wrapper(self):
+                assert LRCArg.doesArgExist(argName), 'Argument "{}" is not defined.'.format(argName)
+                self.__myArgs.append(argName)
+                return func(self)
+            return wrapper
+        return decorator
+    def setCategory(category:str):
+        def decorator(func):
+            def wrapper(self):
+                cat = category.replace('\\', '/')
+                self.__myCategories = cat.split('/')
+                return func(self)
+            return wrapper
+        return decorator
+    def initialize(self):
         raise NotImplementedError
 
     def execute(self, args):

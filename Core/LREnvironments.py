@@ -33,7 +33,14 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         for env, value in args.items():
             LREnvironments.__environments[env] = value
         LREnvironments.__defaultEnvs[env] = value
-
+    @staticmethod
+    def iterEnv():
+        for env, value in LREnvironments.__environments.items():
+            yield env, value
+        for env, value in LREnvironments.__defaultEnvs.items():
+            if env not in LREnvironments.__environments:
+                yield env, value
+                
     def __getattr__(self, name):
         if name in LREnvironments.__environments:
             return LREnvironments.__environments[name]
@@ -47,10 +54,7 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
             LREnvironments.__environments[name] = value
 
     def __init__(self):
-        self.define()
-
-    def define(self):
-        raise NotImplementedError
+        self.initialize()
 
     def setEnv(**args):
         def decorator(func):
@@ -60,3 +64,5 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
                 return func(self)
             return wrapper
         return decorator
+    def initialize(self):
+        raise NotImplementedError
