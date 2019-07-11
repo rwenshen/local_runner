@@ -5,7 +5,7 @@ from .LROFactory import LROFactory
 class LRObjectMetaClass(type):
 
     @staticmethod
-    def newImple(cls, name, bases, attrs):
+    def newImpl(cls, name, bases, attrs):
         finalType = type.__new__(cls, name, bases, attrs)
         LROFactory.registerLRO(finalType, cls)
         return finalType
@@ -24,7 +24,7 @@ class LRObjectMetaClass(type):
         return []
     
     def __new__(cls, name, bases, attrs):
-        return LRObjectMetaClass.newImple(cls, name, bases, attrs)
+        return LRObjectMetaClass.newImpl(cls, name, bases, attrs)
 
 class LRObject(metaclass=LRObjectMetaClass):
     pass

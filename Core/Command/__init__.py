@@ -1,7 +1,5 @@
 from .LRCommand import LRCommandMetaClass
-__all__ = ['LRCommand']
-__all__.append('LRCArg')
+__all__ = ['LRCommand','LRCArg']
 
 from .LRCommand import LRCommand
-
-from .CommandArg.LRCArg import LRCArg
+from .LRCArg import LRCArg

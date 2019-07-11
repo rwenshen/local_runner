@@ -20,7 +20,7 @@ class LROFactory:
         className = lroClass.__name__
         assert className not in lroSubDict, '"{}" has been registered!'.format(lroClass)
         if isSingleton:
-            assert len(lroSubDict) > 0, '"{}" can only has one instance!'.format(baseTypeName)
+            assert len(lroSubDict) == 0, '"{}" can only has one instance!'.format(baseTypeName)
         if needInstanceList or isSingleton:
             lroSubDict[className] = lroClass()
         else:
@@ -44,6 +44,15 @@ class LROFactory:
         if baseTypeName in LROFactory.__lroDict:
             return LROFactory.__lroDict[baseTypeName].get(typeName, None) is not None
         return False
+
+    @staticmethod
+    def getSingleton(typeName):
+        if typeName in LROFactory.__lroDict:
+            lroSubDict = LROFactory.__lroDict[typeName]
+            assert len(lroSubDict) == 1
+            for singleton in lroSubDict.values():
+                return singleton
+        return None
 
 #    @staticmethod
 #    def createLRO(saveData:dict, _expectType:type, needDefault:bool=False):

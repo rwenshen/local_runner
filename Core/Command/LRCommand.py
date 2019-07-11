@@ -1,5 +1,6 @@
+import argparse
 from ..LRObject import LRObjectMetaClass, LRObject
-from .CommandArg.LRCArg import LRCArg
+from .LRCArg import LRCArg
 from ..LROFactory import LROFactory
 
 class LRCommandMetaClass(LRObjectMetaClass):
@@ -12,27 +13,42 @@ class LRCommandMetaClass(LRObjectMetaClass):
         return True
 
     def __new__(cls, name, bases, attrs):
-        return LRCommandMetaClass.newImple(cls, name, bases, attrs)
+        return LRCommandMetaClass.newImpl(cls, name, bases, attrs)
 
 class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     
+
+    @staticmethod
+    def getCmdList():
+        return LROFactory.findList(LRCommand.__name__)
+
+    @staticmethod
+    def getCmd(cmdName:str):
+        return LROFactory.find(LRCommand.__name__, cmdName)
+
     def __init__(self):
-        self.__myArgs=[]
+        self.__description = self.__doc__
+        if self.__description is None:
+            self.__description = 'Command: ' + self.__class__.__name__
+        self.__myArgs = []
         self.initArgs()
 
     @property
-    def cmdName(self):
+    def myName(self):
         return self.__class__.__name__
+    @property
+    def myDescription(self):
+        return self.__description
 
     def iterArgs(self):
-        for arg in self.__myArgs:
-            yield arg
+        for argName in self.__myArgs:
+            yield LRCArg.getArg(argName)
 
     def addArg(self, argName:str):
-        assert LROFactory.contain('LRCArg', argName), 'Argument "{}" is not defined.'.format(argName)
+        assert LRCArg.doesArgExist(argName), 'Argument "{}" is not defined.'.format(argName)
         self.__myArgs.append(argName)
     def initArgs(self):
         raise NotImplementedError
 
-    def execute(self):
+    def execute(self, args):
         raise NotImplementedError

@@ -8,7 +8,7 @@ Users can add a serias commands (predefined or customized), and trigger these co
 from .Console.LRCmd import LRCmd
 
 def runConsole():
-    cmd = LRCmd('Test')
+    cmd = LRCmd()
     cmd.initialize()
     cmd.run()
 
