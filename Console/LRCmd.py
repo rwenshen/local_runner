@@ -7,9 +7,6 @@ class LRCmd:
     
     def __init__(self):
         self.__collectCommandsInfo()
-        # Console Environments
-        LREnvironments.setDefaultEnv(AUTO_SHORT_NAME_ENABLE=True)
-        LREnvironments.setDefaultEnv(AUTO_SHORT_NAME_IGNORE_LEN=3)
 
     def __collectCommandsInfo(self):
         self.__myCmdNameList = []

@@ -37,6 +37,7 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
         self.__isPlacement = False
         self.__choices = None
         self.__default = None
+        self.__shortName = None
 
         self.defineArgs()
 
@@ -74,6 +75,14 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
             return wrapper
         return decorator
 
+    def argShortName(shortName:str):
+        def decorator(func):
+            def wrapper(self):
+                self.__shortName= shortName
+                return func(self)
+            return wrapper
+        return decorator
+
     def defineArgs(self):
         raise NotImplementedError
 
@@ -95,5 +104,8 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
     @property
     def myIsPlacement(self):
         return self.__isPlacement
+    @property
+    def myShortName(self):
+        return self.__shortName
 
 
