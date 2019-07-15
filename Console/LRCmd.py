@@ -55,12 +55,11 @@ class LRCmd:
             formatter_class=argparse.RawTextHelpFormatter
         )
 
-        shortNameDict = {}
         for arg in cmd.iterArgs():
             if arg.myIsPlacement:
                 LRCmd.__addPlacementArg(cmdArgParser, arg)
             else:
-                LRCmd.__addOptionalArg(cmdArgParser, arg, shortNameDict)
+                LRCmd.__addOptionalArg(cmdArgParser, arg)
 
         return cmdArgParser
 
@@ -71,28 +70,31 @@ class LRCmd:
                             type=arg.myType,
                             help=arg.myDescription)
     @staticmethod
-    def __addOptionalArg(parser, arg, shortNameDict):
+    def __addOptionalArg(parser, arg):
 
-        #if arg.myChoices is None:
+        if arg.myShortName is not None:
+            argNames = ['-'+arg.myShortName, '--'+arg.myName]
+        else:
+            argNames = '-'+arg.myName
 
-        parser.add_argument('-'+arg.myName,
-                            choices=arg.myChoices,
-                            default=arg.myDefault,
-                            type=arg.myType,
-                            help=arg.myDescription)
+        argSettings = {}
 
-    @staticmethod
-    def __addOptionalArgImpl(parser, name, type, default, help, shortNameDict):
-        needAutoShortName = LREnvironments.singleton().AUTO_SHORT_NAME_ENABLE
-        shortIgnoreLen = LREnvironments.singleton().AUTO_SHORT_NAME_IGNORE_LEN
+        argSettings['help'] = arg.myDescription
 
-        if needAutoShortName and len(name) > shortIgnoreLen:
-            #shortName = 
-            flags = [
-                '-'+'',
-                '--'+name]
+        if arg.myChoices is not None:
+            if len(arg.myChoices) == 1:
+                argSettings['action'] = 'store_const'
+                argSettings['default'] = arg.myChoices[0]
+            else:
+                argSettings['choices'] = arg.myChoices
 
+        if arg.myType == bool:
+            if not arg.myDefault:
+                argSettings['action'] = 'store_false'
+            else:
+                argSettings['action'] = 'store_true'
+        else:
+            argSettings['type'] = arg.myType
+            argSettings['default'] = arg.myDefault
 
-        parser.add_argument(*flags, **settings)
-        
-
+        parser.add_argument(*argNames, **argSettings)
