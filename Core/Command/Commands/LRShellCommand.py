@@ -32,6 +32,8 @@ class LRShellCommand(LRCommand):
             line = line.replace('\r', '')
             print(line)
 
+    def getCwd(self, args):
+        raise NotImplementedError
     def doInput(self, args):
         raise NotImplementedError
 
