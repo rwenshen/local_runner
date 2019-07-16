@@ -18,9 +18,6 @@ class command1(LRShellCommand):
     def initialize(self):
         pass
 
-    def getCwd(self, args):
-        return '.'
-
     def doInput(self, args):
         self.input('set PLATFORM='+args.Platform)
         self.input('set PLATFORM')

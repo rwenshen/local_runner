@@ -33,7 +33,7 @@ class LRShellCommand(LRCommand):
             print(line)
 
     def getCwd(self, args):
-        raise NotImplementedError
+        return '.'
     def doInput(self, args):
         raise NotImplementedError
 
@@ -43,7 +43,8 @@ class LRShellCommand(LRCommand):
         p = subprocess.Popen(shlex.split(self.__shell),
                         stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE)
+                        stderr=subprocess.PIPE,
+                        cwd=self.getCwd(args))
         t = threading.Thread(
                         target=LRShellCommand.__processOutput,
                         args=[p],
