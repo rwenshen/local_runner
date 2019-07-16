@@ -74,7 +74,7 @@ class LRCmd:
         if arg.myShortName is not None:
             argNames = ['-'+arg.myShortName, '--'+arg.myName]
         else:
-            argNames = '-'+arg.myName
+            argNames = ['-'+arg.myName]
 
         argSettings = {}
 

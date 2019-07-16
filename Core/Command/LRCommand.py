@@ -1,7 +1,6 @@
-import argparse
 from ..LRObject import LRObjectMetaClass, LRObject
-from .LRCArg import LRCArg
 from ..LROFactory import LROFactory
+from .LRCArg import LRCArg
 
 class LRCommandMetaClass(LRObjectMetaClass):
 
@@ -11,6 +10,11 @@ class LRCommandMetaClass(LRObjectMetaClass):
     @staticmethod
     def isNeedInstance():
         return True
+    @staticmethod
+    def getIgnoreList():
+        return [
+            'LRShellCommand',
+            ]
 
     def __new__(cls, name, bases, attrs):
         return LRCommandMetaClass.newImpl(cls, name, bases, attrs)

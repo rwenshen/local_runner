@@ -20,7 +20,9 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
     
     __environments = {}
     __defaultEnvs = {
-        'PROJ_DESC':'Unknown, please set environment "PROJ_DESC".'
+        'PROJ_DESC':'Unknown, please set environment "PROJ_DESC".',
+        'SHELL':'',
+        'SHELL_END':'',
     }
 
     @staticmethod

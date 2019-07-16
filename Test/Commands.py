@@ -1,18 +1,23 @@
 from ..Core.Command import *
-from .Args import *
 
-class Command1(LRCommand):
-    @LRCommand.addArg('PlatformArg')
-    def initialize(self):
-        pass
-
-class Command2(LRCommand):
+class command2(LRCommand):
+    '''Test Commond2'''
     @LRCommand.addArg('PlatformArg')
     @LRCommand.addArg('IncredibuildArg')
     def initialize(self):
         pass
 
-class Command3(Command2):
+class command3(command2):
     @LRCommand.addArg('PathArg')
     def initialize(self):
+        super().initialize()
+
+
+class command1(LRShellCommand):
+    @LRCommand.addArg('PlatformArg')
+    def initialize(self):
         pass
+
+    def doInput(self, args):
+        self.input('set PLATFORM='+args.Platform)
+        self.input('set PLATFORM')
