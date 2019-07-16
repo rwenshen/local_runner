@@ -1,4 +1,5 @@
 import os
+import locale
 import subprocess
 import shlex
 import threading
@@ -18,7 +19,7 @@ class LRShellCommand(LRCommand):
     def input(self, input:str):
         assert self.__currentIn is not None
         toWrite = input + os.linesep
-        self.__currentIn.write(bytes(toWrite, encoding='utf8'))
+        self.__currentIn.write(bytes(toWrite, encoding=locale.getpreferredencoding()))
         self.__currentIn.flush()
 
     @staticmethod
@@ -27,7 +28,7 @@ class LRShellCommand(LRCommand):
             line = p.stdout.readline()
             if len(line) == 0:
                 break
-            line = str(line, encoding='utf8')
+            line = str(line, encoding=locale.getpreferredencoding())
             line = line.replace('\n', '')
             line = line.replace('\r', '')
             print(line)
