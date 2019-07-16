@@ -11,10 +11,8 @@ class LRShellCommand(LRCommand):
         super().__init__()
         
         self.__shell = LREnvironments.singleton().SHELL
-        self.__shellEnd = LREnvironments.singleton().SHELL_END
         self.__currentIn = None
         assert len(self.__shell) > 0, 'Missing environment SHELL!'
-        assert len(self.__shellEnd) > 0, 'Missing environment SHELL_END!'
 
     def input(self, input:str):
         assert self.__currentIn is not None
@@ -44,8 +42,9 @@ class LRShellCommand(LRCommand):
         p = subprocess.Popen(shlex.split(self.__shell),
                         stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        cwd=self.getCwd(args))
+                        stderr=subprocess.STDOUT,
+                        cwd=self.getCwd(args),
+                        )
         t = threading.Thread(
                         target=LRShellCommand.__processOutput,
                         args=[p],
@@ -54,7 +53,8 @@ class LRShellCommand(LRCommand):
         
         self.__currentIn = p.stdin
         self.doInput(args)
-        self.input(self.__shellEnd)
-
+        p.stdin.close()
+        
         p.wait()
+        print(p.returncode)
         t.join()

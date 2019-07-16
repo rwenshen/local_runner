@@ -21,3 +21,4 @@ class command1(LRShellCommand):
     def doInput(self, args):
         self.input('set PLATFORM='+args.Platform)
         self.input('set PLATFORM')
+        self.input('start notepad')
