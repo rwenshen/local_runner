@@ -1,8 +1,6 @@
 '''
 LocalRunner
 
-LocalRunner is a Python3 lib that provide a tool with GUI.
-Users can add a serias commands (predefined or customized), and trigger these commands by GUI.
 '''
 
 from .Console.LRCmd import LRCmd

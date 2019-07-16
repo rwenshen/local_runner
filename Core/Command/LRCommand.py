@@ -25,7 +25,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def getCmd(cmdName:str):
         return LROFactory.find(LRCommand.__name__, cmdName)
 
-    def __init__(self):        
+    def __init__(self):
         self.__myArgs = []
         self.__myCategories = []
         self.initialize()
