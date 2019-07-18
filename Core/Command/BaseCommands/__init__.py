@@ -1,0 +1,5 @@
+BaseCommandsList = [
+    'LRShellCommand',
+    'LRCompoundCommand',
+    'LRSelectionCommand',
+]

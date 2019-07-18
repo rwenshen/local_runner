@@ -3,11 +3,12 @@ __all__ = [
     'LRCommand',
     'LRCArg'
 ]
-from .Commands import CommandsList
-__all__ = __all__ + CommandsList
+from .BaseCommands import BaseCommandsList
+__all__ = __all__ + BaseCommandsList
 
 
 from .LRCommand import LRCommandMetaClass, LRCommand
 from .LRCArg import LRCArg
 
-from .Commands.LRShellCommand import LRShellCommand
+from .BaseCommands.LRShellCommand import LRShellCommand
+from .BaseCommands.LRCompoundCommand import LRCompoundCommand, LRSelectionCommand

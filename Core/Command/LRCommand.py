@@ -1,6 +1,7 @@
 from ..LRObject import LRObjectMetaClass, LRObject
 from ..LROFactory import LROFactory
 from .LRCArg import LRCArg
+from . import BaseCommands
 
 class LRCommandMetaClass(LRObjectMetaClass):
 
@@ -12,9 +13,7 @@ class LRCommandMetaClass(LRObjectMetaClass):
         return True
     @staticmethod
     def getIgnoreList():
-        return [
-            'LRShellCommand',
-            ]
+        return BaseCommands.BaseCommandsList
 
     def __new__(cls, name, bases, attrs):
         return LRCommandMetaClass.newImpl(cls, name, bases, attrs)
@@ -82,5 +81,5 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         pass
     def execute(self, args) -> int:
         raise NotImplementedError
-    def postExecute(self, args):
+    def postExecute(self, args, successful:bool):
         pass

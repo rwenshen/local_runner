@@ -37,7 +37,7 @@ class LRCmd:
         args = cmdParser.parse_args(self.__myArgs.cmd_args)
         cmd.preExecute(args)
         returnCode = cmd.execute(args)
-        cmd.postExecute(args)
+        cmd.postExecute(args, returnCode==0)
         return returnCode
     
     @staticmethod
