@@ -22,17 +22,16 @@ class LRShellCommand(LRCommand):
 
     @staticmethod
     def __processOutput(p):
-        while True:
-            line = p.stdout.readline()
-            if len(line) == 0:
-                break
+        for line in iter(p.stdout.readline, b''):
             line = str(line, encoding=locale.getpreferredencoding())
             line = line.replace('\n', '')
             line = line.replace('\r', '')
             print(line)
+        p.stdout.close()
 
-    def getCwd(self, args):
-        return '.'
+    @property
+    def myCwd(self):
+        raise NotImplementedError
     def doInput(self, args):
         raise NotImplementedError
 
@@ -43,12 +42,12 @@ class LRShellCommand(LRCommand):
                         stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT,
-                        cwd=self.getCwd(args),
-                        )
+                        cwd=self.myCwd)
         t = threading.Thread(
                         target=LRShellCommand.__processOutput,
                         args=[p],
                         name='Executing '+self.myName)
+        t.daemon = True
         t.start()
         
         self.__currentIn = p.stdin
@@ -56,5 +55,5 @@ class LRShellCommand(LRCommand):
         p.stdin.close()
         
         p.wait()
-        print(p.returncode)
-        t.join()
+        #t.join()
+        return p.returncode

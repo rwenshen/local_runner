@@ -16,6 +16,7 @@ class help(LRCommand):
 
     def execute(self, args):
         LRCmd.LRCmd.printHelp(args.command)
+        return 0
 
 class show_env(LRCommand):
     '''Show the environments of current project.'''
@@ -27,3 +28,4 @@ class show_env(LRCommand):
         print('All Environments:')
         for env, value in LREnvironments.iterEnv():
             print('\t{}={}'.format(env, value))
+        return 0

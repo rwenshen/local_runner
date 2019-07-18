@@ -11,7 +11,9 @@ class LRCmd:
     def __collectCommandsInfo(self):
         self.__myCmdNameList = []
         for lrc in LRCommand.getCmdList():
-            self.__myCmdNameList.append(lrc.__class__.__name__)
+            cmdName = lrc.__class__.__name__
+            if not cmdName.startswith('__'):
+                self.__myCmdNameList.append(cmdName)
 
     def initialize(self):
         # no commands defined
@@ -34,8 +36,9 @@ class LRCmd:
         cmdParser = LRCmd.__parseCmdArgs(cmd)
         args = cmdParser.parse_args(self.__myArgs.cmd_args)
         cmd.preExecute(args)
-        cmd.execute(args)
+        returnCode = cmd.execute(args)
         cmd.postExecute(args)
+        return returnCode
     
     @staticmethod
     def printHelp(cmdName):

@@ -80,7 +80,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
 
     def preExecute(self, args):
         pass
-    def execute(self, args):
+    def execute(self, args) -> int:
         raise NotImplementedError
     def postExecute(self, args):
         pass
