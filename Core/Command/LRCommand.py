@@ -21,12 +21,12 @@ class LRCommandMetaClass(LRObjectMetaClass):
 class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     
     @staticmethod
-    def getCmdList():
-        return LROFactory.findList(LRCommand.__name__)
+    def sGetCmdList():
+        return LROFactory.sFindList(LRCommand.__name__)
 
     @staticmethod
-    def getCmd(cmdName:str):
-        return LROFactory.find(LRCommand.__name__, cmdName)
+    def sGetCmd(cmdName:str):
+        return LROFactory.sFind(LRCommand.__name__, cmdName)
 
     def __init__(self):
         self.__myArgs = []
@@ -37,19 +37,19 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         if len(self.myCategories) > 0:
             cat = '/'.join(self.__myCategories)
             cat += '/'
-        self.__description = 'Command: {}{}'.format(
+        self.__myDescription = 'Command: {}{}'.format(
                                     cat,
                                     self.__class__.__name__)
         if self.__doc__ is not None:
-            self.__description += '\n\t'
-            self.__description += self.__doc__
+            self.__myDescription += '\n\t'
+            self.__myDescription += self.__doc__
 
     @property
     def myName(self):
         return self.__class__.__name__
     @property
     def myDescription(self):
-        return self.__description
+        return self.__myDescription
     @property
     def myCategories(self):
         return self.__myCategories
@@ -74,9 +74,10 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
                 return func(self)
             return wrapper
         return decorator
+
+    
     def initialize(self):
         raise NotImplementedError
-
     def preExecute(self, args):
         pass
     def execute(self, args) -> int:

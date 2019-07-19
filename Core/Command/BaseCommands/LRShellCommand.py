@@ -10,7 +10,7 @@ class LRShellCommand(LRCommand):
     def __init__(self):
         super().__init__()
         
-        self.__shell = LREnvironments.singleton().SHELL
+        self.__shell = LREnvironments.sSingleton.SHELL
         self.__currentIn = None
         assert len(self.__shell) > 0, 'Missing environment SHELL!'
 
@@ -28,12 +28,6 @@ class LRShellCommand(LRCommand):
             line = line.replace('\r', '')
             print(line)
         p.stdout.close()
-
-    @property
-    def myCwd(self):
-        raise NotImplementedError
-    def doInput(self, args):
-        raise NotImplementedError
 
     def execute(self, args):
         
@@ -57,3 +51,9 @@ class LRShellCommand(LRCommand):
         p.wait()
         #t.join()
         return p.returncode
+
+    @property
+    def myCwd(self):
+        raise NotImplementedError
+    def doInput(self, args):
+        raise NotImplementedError

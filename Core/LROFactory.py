@@ -3,7 +3,7 @@ class LROFactory:
     __lroDict = {}
 
     @staticmethod
-    def registerLRO(lroClass, metaClass):
+    def sRegisterLRO(lroClass, metaClass):
         baseTypeName = metaClass.getBaseClassName()
         needInstanceList = metaClass.isNeedInstance()
         isSingleton = metaClass.isSingleton()
@@ -28,25 +28,25 @@ class LROFactory:
         #print('"{}" is registered'.format(lroClass))
 
     @staticmethod
-    def findList(baseTypeName):
+    def sFindList(baseTypeName):
         if baseTypeName in LROFactory.__lroDict:
             return LROFactory.__lroDict[baseTypeName].values()
         return []
 
     @staticmethod
-    def find(baseTypeName, typeName):
+    def sFind(baseTypeName, typeName):
         if baseTypeName in LROFactory.__lroDict:
             return LROFactory.__lroDict[baseTypeName].get(typeName, None)
         return None
 
     @staticmethod
-    def contain(baseTypeName, typeName):
+    def sContain(baseTypeName, typeName):
         if baseTypeName in LROFactory.__lroDict:
             return LROFactory.__lroDict[baseTypeName].get(typeName, None) is not None
         return False
 
     @staticmethod
-    def getSingleton(typeName):
+    def sGetSingleton(typeName):
         if typeName in LROFactory.__lroDict:
             lroSubDict = LROFactory.__lroDict[typeName]
             assert len(lroSubDict) == 1
@@ -55,7 +55,7 @@ class LROFactory:
         return None
 
 #    @staticmethod
-#    def createLRO(saveData:dict, _expectType:type, needDefault:bool=False):
+#    def sCreateLRO(saveData:dict, _expectType:type, needDefault:bool=False):
 #        if saveData is not None and LRObject.LRObject.cTypePropertyName in saveData:
 #            lroTypeName = saveData[LRObject.LRObject.cTypePropertyName]
 #            if lroTypeName in LROFactory.__lroDict:

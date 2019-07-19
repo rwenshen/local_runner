@@ -7,7 +7,7 @@ class LRObjectMetaClass(type):
     @staticmethod
     def newImpl(cls, name, bases, attrs):
         finalType = type.__new__(cls, name, bases, attrs)
-        LROFactory.registerLRO(finalType, cls)
+        LROFactory.sRegisterLRO(finalType, cls)
         return finalType
 
     @staticmethod

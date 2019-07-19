@@ -19,15 +19,15 @@ class LRCompoundCommand(LRCommand):
         assert cmdName in self.__mySubCmds
     def preExecuteSubCmd(self, cmdName:str, args):
         self.__verifyCmd(cmdName)
-        cmd = LRCommand.getCmd(cmdName)
+        cmd = LRCommand.sGetCmd(cmdName)
         cmd.preExecute(args)
     def executeSubCmd(self, cmdName:str, args)->int:
         self.__verifyCmd(cmdName)
-        cmd = LRCommand.getCmd(cmdName)
+        cmd = LRCommand.sGetCmd(cmdName)
         return cmd.execute(args)
     def postExecuteSubCmd(self, cmdName:str, args, successful:bool):
         self.__verifyCmd(cmdName)
-        cmd = LRCommand.getCmd(cmdName)
+        cmd = LRCommand.sGetCmd(cmdName)
         return cmd.postExecute(args, successful)
 
     def preExecute(self, args):
@@ -51,9 +51,6 @@ class LRCompoundCommand(LRCommand):
 
 class LRSelectionCommand(LRCompoundCommand):
 
-    def getSelectedCmd(self, args)->str:
-        raise NotImplementedError
-
     def preExecute(self, args):
         self.__myCmd = self.getSelectedCmd(args)
         self.preExecuteSubCmd(self.__myCmd, args)
@@ -63,3 +60,6 @@ class LRSelectionCommand(LRCompoundCommand):
 
     def postExecute(self, args, successful:bool):
         self.postExecuteSubCmd(self.__myCmd, args, successful)
+
+    def getSelectedCmd(self, args)->str:
+        raise NotImplementedError

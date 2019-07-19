@@ -17,11 +17,11 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
 
     @staticmethod
     def doesArgExist(argName:str):
-        return LROFactory.contain(LRCArg.__name__, argName)
+        return LROFactory.sContain(LRCArg.__name__, argName)
 
     @staticmethod
     def getArg(argName:str):
-        return LROFactory.find(LRCArg.__name__, argName)
+        return LROFactory.sFind(LRCArg.__name__, argName)
 
     def __init__(self):
         # get name from class name
@@ -40,6 +40,28 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
         self.__shortName = None
 
         self.defineArgs()
+
+    @property
+    def myName(self):
+        return self.__name
+    @property
+    def myDescription(self):
+        return self.__description
+    @property
+    def myType(self):
+        return self.__type
+    @property
+    def myChoices(self):
+        return self.__choices
+    @property
+    def myDefault(self):
+        return self.__default
+    @property
+    def myIsPlacement(self):
+        return self.__isPlacement
+    @property
+    def myShortName(self):
+        return self.__shortName
 
     def argType(argType:type):
         def decorator(func):
@@ -85,27 +107,3 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
 
     def defineArgs(self):
         raise NotImplementedError
-
-    @property
-    def myName(self):
-        return self.__name
-    @property
-    def myDescription(self):
-        return self.__description
-    @property
-    def myType(self):
-        return self.__type
-    @property
-    def myChoices(self):
-        return self.__choices
-    @property
-    def myDefault(self):
-        return self.__default
-    @property
-    def myIsPlacement(self):
-        return self.__isPlacement
-    @property
-    def myShortName(self):
-        return self.__shortName
-
-

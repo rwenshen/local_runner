@@ -23,19 +23,15 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         'PROJ_DESC':'Unknown, please set environment "PROJ_DESC".',
         'SHELL':'',
     }
-
+    
+    sSingleton = None
     @staticmethod
-    def singleton():
-        s = LROFactory.getSingleton(LREnvironments.__name__)
-        assert s is not None, 'Please create class derived from LREnvironments, to set environments.'
-        return s
-    @staticmethod
-    def setDefaultEnv(**args):
+    def sSetDefaultEnv(**args):
         for env, value in args.items():
             LREnvironments.__environments[env] = value
         LREnvironments.__defaultEnvs[env] = value
     @staticmethod
-    def iterEnv():
+    def sIterEnv():
         for env, value in LREnvironments.__environments.items():
             yield env, value
         for env, value in LREnvironments.__defaultEnvs.items():
@@ -55,6 +51,7 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
             LREnvironments.__environments[name] = value
 
     def __init__(self):
+        LREnvironments.sSingleton = self
         self.initialize()
 
     def setEnv(**args):

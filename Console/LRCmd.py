@@ -10,7 +10,7 @@ class LRCmd:
 
     def __collectCommandsInfo(self):
         self.__myCmdNameList = []
-        for lrc in LRCommand.getCmdList():
+        for lrc in LRCommand.sGetCmdList():
             cmdName = lrc.__class__.__name__
             if not cmdName.startswith('__'):
                 self.__myCmdNameList.append(cmdName)
@@ -21,7 +21,7 @@ class LRCmd:
 
         # descriptions
         argParser = argparse.ArgumentParser(
-            description=LREnvironments.singleton().PROJ_DESC,
+            description=LREnvironments.sSingleton.PROJ_DESC,
         )
 
         # commands
@@ -32,7 +32,7 @@ class LRCmd:
         self.__myArgs = argParser.parse_args()
 
     def run(self):
-        cmd = LRCommand.getCmd(self.__myArgs.cmd)
+        cmd = LRCommand.sGetCmd(self.__myArgs.cmd)
         cmdParser = LRCmd.__parseCmdArgs(cmd)
         args = cmdParser.parse_args(self.__myArgs.cmd_args)
         cmd.preExecute(args)
@@ -42,7 +42,7 @@ class LRCmd:
     
     @staticmethod
     def printHelp(cmdName):
-        cmd = LRCommand.getCmd(cmdName)
+        cmd = LRCommand.sGetCmd(cmdName)
         if cmd is None:
             pass
         else:
