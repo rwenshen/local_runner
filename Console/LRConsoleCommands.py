@@ -5,7 +5,7 @@ from . import LRCmd
 class commandArg(LRCArg):
     '''The command for help.'''
     @LRCArg.argPlacement()
-    def defineArgs(self):
+    def initialize(self):
         pass
 class help(LRCommand):
     '''Give the help information of the specific command.'''

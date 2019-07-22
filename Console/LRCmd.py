@@ -1,4 +1,5 @@
 import argparse
+from enum import Enum
 from ..Core.Command import *
 from ..Core.LREnvironments import LREnvironments
 from . import LRConsoleCommands
@@ -34,7 +35,7 @@ class LRCmd:
     def run(self):
         cmd = LRCommand.sGetCmd(self.__myArgs.cmd)
         cmdParser = LRCmd.__parseCmdArgs(cmd)
-        args = cmdParser.parse_args(self.__myArgs.cmd_args)
+        args = self.__genArgList(cmd, cmdParser.parse_args(self.__myArgs.cmd_args))
         cmd.preExecute(args)
         returnCode = cmd.execute(args)
         cmd.postExecute(args, returnCode==0)
@@ -49,6 +50,7 @@ class LRCmd:
             cmdParser = LRCmd.__parseCmdArgs(cmd)
             cmdParser.print_help()
 
+    ########## Arguments ##########
     @staticmethod
     def __parseCmdArgs(cmd):
         
@@ -61,44 +63,64 @@ class LRCmd:
 
         for arg in cmd.iterArgs():
             if arg.myIsPlacement:
-                LRCmd.__addPlacementArg(cmdArgParser, arg)
+                argNames = [arg.myName]
+            elif arg.myShortName is not None:
+                argNames = ['-'+arg.myShortName, '--'+arg.myName]
             else:
-                LRCmd.__addOptionalArg(cmdArgParser, arg)
+                argNames = ['-'+arg.myName]
+            argSettings = {}
+            argSettings['help'] = arg.myDescription
+            argSettings['type'] = arg.myType
+            if arg.myChoices is not None:
+                argSettings['choices'] = arg.myChoices
+            if arg.myDefault is not None:
+                argSettings['default'] = arg.myDefault
+            # for Enum type
+            if issubclass(arg.myType, Enum):
+                argSettings['type'] = str
+                argSettings['choices'] = [e.name for e in arg.myType]
+                if arg.myDefault is not None:
+                    argSettings['default'] = arg.myDefault.name
+            # process for placement and optional
+            if arg.myIsPlacement:
+                LRCmd.__processPlacementArg(argSettings)
+            else:
+                LRCmd.__processOptionalArg(argSettings)
+            cmdArgParser.add_argument(*argNames, **argSettings)
 
         return cmdArgParser
 
     @staticmethod
-    def __addPlacementArg(parser, arg):
-        parser.add_argument(arg.myName,
-                            choices=arg.myChoices,
-                            type=arg.myType,
-                            help=arg.myDescription)
+    def __processPlacementArg(argSettings):
+        pass
     @staticmethod
-    def __addOptionalArg(parser, arg):
-
-        if arg.myShortName is not None:
-            argNames = ['-'+arg.myShortName, '--'+arg.myName]
-        else:
-            argNames = ['-'+arg.myName]
-
-        argSettings = {}
-
-        argSettings['help'] = arg.myDescription
-
-        if arg.myChoices is not None:
-            if len(arg.myChoices) == 1:
+    def __processOptionalArg(argSettings):
+        # with choices
+        if 'choices' in argSettings:
+            if len(argSettings['choices']) == 1:
                 argSettings['action'] = 'store_const'
-                argSettings['default'] = arg.myChoices[0]
-            else:
-                argSettings['choices'] = arg.myChoices
-
-        if arg.myType == bool:
-            if not arg.myDefault:
+                argSettings['default'] = argSettings['choices'][0]
+                del argSettings['choices']
+        
+        # bool type
+        if argSettings['type'] == bool:
+            if 'default' not in argSettings or argSettings['default']:
                 argSettings['action'] = 'store_false'
             else:
                 argSettings['action'] = 'store_true'
-        else:
-            argSettings['type'] = arg.myType
-            argSettings['default'] = arg.myDefault
+            del argSettings['type']
+            if 'default' in argSettings:
+                del argSettings['default']
 
-        parser.add_argument(*argNames, **argSettings)
+    @staticmethod
+    def __genArgList(cmd, args):
+        argList = LRCArgList(cmd)
+        for name, value in vars(args).items():
+            arg = LRCArg.sGetArg(name)
+            print(arg)
+            print(name)
+            print(value)
+            if issubclass(arg.myType, Enum) and value is not None:
+                value = arg.myType[value]
+            argList.__setattr__(name, value)
+        return argList

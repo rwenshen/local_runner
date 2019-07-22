@@ -18,7 +18,8 @@ class LROFactory:
         lroSubDict = LROFactory.__lroDict[baseTypeName]
 
         className = lroClass.__name__
-        assert className not in lroSubDict, '"{}" has been registered!'.format(lroClass)
+        assert className not in lroSubDict,\
+            'Class with name "{}" has been registered!'.format(lroClass.__name__)
         if isSingleton:
             assert len(lroSubDict) == 0, '"{}" can only has one instance!'.format(baseTypeName)
         if needInstanceList or isSingleton:

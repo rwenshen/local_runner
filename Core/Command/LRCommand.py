@@ -1,6 +1,7 @@
 from ..LRObject import LRObjectMetaClass, LRObject
 from ..LROFactory import LROFactory
 from .LRCArg import LRCArg
+from .LRCArgList import LRCArgList
 from . import BaseCommands
 
 class LRCommandMetaClass(LRObjectMetaClass):
@@ -56,12 +57,12 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
 
     def iterArgs(self):
         for argName in self.__myArgs:
-            yield LRCArg.getArg(argName)
+            yield LRCArg.sGetArg(argName)
 
     def addArg(argName:str):
         def decorator(func):
             def wrapper(self):
-                assert LRCArg.doesArgExist(argName), 'Argument "{}" is not defined.'.format(argName)
+                assert LRCArg.sDoesArgExist(argName), 'Argument "{}" is not defined.'.format(argName)
                 self.__myArgs.append(argName)
                 return func(self)
             return wrapper
@@ -75,12 +76,12 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
             return wrapper
         return decorator
 
-    
+
     def initialize(self):
         raise NotImplementedError
-    def preExecute(self, args):
+    def preExecute(self, args:LRCArgList):
         pass
-    def execute(self, args) -> int:
+    def execute(self, args:LRCArgList) -> int:
         raise NotImplementedError
-    def postExecute(self, args, successful:bool):
+    def postExecute(self, args:LRCArgList, successful:bool):
         pass

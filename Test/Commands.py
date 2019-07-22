@@ -2,19 +2,23 @@ from ..Core.Command import *
 
 class command2(LRCommand):
     '''Test Commond2'''
-    @LRCommand.addArg('PlatformArg')
-    @LRCommand.addArg('IncredibuildArg')
+    @LRCommand.addArg('EnumTest')
+    @LRCommand.addArg('Platform')
+    @LRCommand.addArg('Incredibuild')
     def initialize(self):
         pass
 
+    def execute(self, args):
+        return 0
+
 class command3(command2):
-    @LRCommand.addArg('PathArg')
+    @LRCommand.addArg('Path')
     def initialize(self):
         super().initialize()
 
 
 class command1(LRShellCommand):
-    @LRCommand.addArg('PlatformArg')
+    @LRCommand.addArg('Platform')
     def initialize(self):
         pass
 
