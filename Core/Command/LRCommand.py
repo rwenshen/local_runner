@@ -58,6 +58,8 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def iterArgs(self):
         for argName in self.__myArgs:
             yield LRCArg.sGetArg(argName)
+    def containArg(self, argName:str):
+        return argName in self.__myArgs
 
     def addArg(argName:str):
         def decorator(func):

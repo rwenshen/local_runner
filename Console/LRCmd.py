@@ -104,7 +104,7 @@ class LRCmd:
         
         # bool type
         if argSettings['type'] == bool:
-            if 'default' not in argSettings or argSettings['default']:
+            if 'default' in argSettings and argSettings['default']:
                 argSettings['action'] = 'store_false'
             else:
                 argSettings['action'] = 'store_true'
@@ -117,9 +117,6 @@ class LRCmd:
         argList = LRCArgList(cmd)
         for name, value in vars(args).items():
             arg = LRCArg.sGetArg(name)
-            print(arg)
-            print(name)
-            print(value)
             if issubclass(arg.myType, Enum) and value is not None:
                 value = arg.myType[value]
             argList.__setattr__(name, value)
