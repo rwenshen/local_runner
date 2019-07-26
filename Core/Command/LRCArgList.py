@@ -12,10 +12,11 @@ class LRCArgList:
         else:
             self.__setArg(name, value)
 
-    def __init__(self, cmd):
+    def __init__(self, cmd=None):
         self.__myDict = {}
-        for arg in cmd.iterArgs():
-            self.__myDict[arg.myName] = arg.myDefault
+        if cmd is not None:
+            for arg in cmd.iterArgs():
+                self.__myDict[arg.myName] = arg.myDefault
 
     def __setArg(self, name, value):
         arg = LRCArg.sGetArg(name)
@@ -26,3 +27,8 @@ class LRCArgList:
         if arg.myChoices is not None and value not in arg.myChoices:
             raise AttributeError('Value "{}" is not in choices list'.format(str(value)))
         self.__myDict[name] = value
+
+    def copy(self):
+        cloned = LRCArgList()
+        cloned.__myDict = self.__myDict.copy()
+        return cloned

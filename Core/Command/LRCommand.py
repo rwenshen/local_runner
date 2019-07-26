@@ -81,9 +81,15 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
 
     def initialize(self):
         raise NotImplementedError
+
+    def doExecute(self, args:LRCArgList):
+        self.preExecute(args)
+        returnCode = self.execute(args)
+        self.postExecute(args, returnCode)
+        return returnCode
     def preExecute(self, args:LRCArgList):
         pass
     def execute(self, args:LRCArgList) -> int:
         raise NotImplementedError
-    def postExecute(self, args:LRCArgList, successful:bool):
+    def postExecute(self, args:LRCArgList, returnCode:int):
         pass

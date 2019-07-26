@@ -9,11 +9,11 @@ class LRCompoundCommand(LRCommand):
         for arg in super().iterArgs():
             self.__myAllArgs[arg.myName] = arg
 
-    def addSubCmd(cmdName:str, **args):
+    def addSubCmd(subCmdAlias:str, cmdName:str, **args):
         def decorator(func):
             def wrapper(self):
-                assert cmdName not in self.__mySubCmds
-                self.__mySubCmds[cmdName] = args
+                assert subCmdAlias not in self.__mySubCmds
+                self.__mySubCmds[subCmdAlias] = (cmdName, args)
                 cmd = LRCommand.sGetCmd(cmdName)
                 # verify
                 assert cmd is not None
@@ -29,53 +29,44 @@ class LRCompoundCommand(LRCommand):
         for arg in self.__myAllArgs.values():
             yield arg
             
-    def __verifyCmd(self, cmdName:str):
-        assert cmdName in self.__mySubCmds
-    def preExecuteSubCmd(self, cmdName:str, args):
-        self.__verifyCmd(cmdName)
+    def __verifyCmd(self, subCmdAlias:str):
+        assert subCmdAlias in self.__mySubCmds
+    def executeSubCmd(self, subCmdAlias:str, args):
+        self.__verifyCmd(subCmdAlias)
+        cmdInfo = self.__mySubCmds[subCmdAlias]
+        cmdName = cmdInfo[0]
         cmd = LRCommand.sGetCmd(cmdName)
-        for predefinedArg, value in self.__mySubCmds[cmdName].items():
-            args.__setattr__(predefinedArg, value)
-        cmd.preExecute(args)
-    def executeSubCmd(self, cmdName:str, args)->int:
-        self.__verifyCmd(cmdName)
-        cmd = LRCommand.sGetCmd(cmdName)
-        return cmd.execute(args)
-    def postExecuteSubCmd(self, cmdName:str, args, successful:bool):
-        self.__verifyCmd(cmdName)
-        cmd = LRCommand.sGetCmd(cmdName)
-        return cmd.postExecute(args, successful)
-
-    def preExecute(self, args):
-        for cmdName in self.__mySubCmds.keys():
-            self.preExecuteSubCmd(cmdName, args)
-
-    def execute(self, args)->int:
-        self.__myExecuted = []
-        for cmdName in self.__mySubCmds.keys():
-            returnCode = self.executeSubCmd(cmdName, args)
-            self.__myExecuted.append(cmdName)
+        subArgs = args.copy()
+        for predefinedArg, value in cmdInfo[1].items():
+            subArgs.__setattr__(predefinedArg, value)
+        return cmd.doExecute(subArgs)
+    def executeSubCmdList(self, subCmds, args):
+        for subCmdAlias in subCmds:
+            returnCode = self.executeSubCmd(subCmdAlias, args)
             if returnCode != 0:
                 return returnCode
         return 0
 
+    def doExecute(self, args):
+        return self.executeSubCmdList(self.__mySubCmds.keys(), args)
+
+    def preExecute(self, args):
+        raise NotImplementedError
+    def execute(self, args)->int:
+        raise NotImplementedError
     def postExecute(self, args, successful:bool):
-        result = successful
-        for cmdName in reversed(self.__myExecuted):
-            self.postExecuteSubCmd(cmdName, args, result)
-            result = True
+        raise NotImplementedError
 
 class LRSelectionCommand(LRCompoundCommand):
 
-    def preExecute(self, args):
-        self.__myCmd = self.getSelectedCmd(args)
-        self.preExecuteSubCmd(self.__myCmd, args)
+    def doExecute(self, args):
+        toExecute = self.getSelectedSubCmd(args)
+        if isinstance(toExecute, list):
+            self.__mySelectedCmds = [cmd for cmd in toExecute]
+        else:
+            self.__mySelectedCmds = [toExecute]
 
-    def execute(self, args)->int:
-        return self.executeSubCmd(self.__myCmd, args)
+        return self.executeSubCmdList(self.__mySelectedCmds, args)
 
-    def postExecute(self, args, successful:bool):
-        self.postExecuteSubCmd(self.__myCmd, args, successful)
-
-    def getSelectedCmd(self, args)->str:
+    def getSelectedSubCmd(self, args)->str:
         raise NotImplementedError

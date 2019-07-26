@@ -31,6 +31,6 @@ class test_enum(LRCommand):
 
 class test_compound(LRCompoundCommand):
     @LRCommand.addArg('Path')
-    @LRCompoundCommand.addSubCmd('test_enum', Platform='x1')
+    @LRCompoundCommand.addSubCmd('sub1', 'test_enum', Platform='x1')
     def initialize(self):
         pass

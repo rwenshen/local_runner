@@ -36,10 +36,7 @@ class LRCmd:
         cmd = LRCommand.sGetCmd(self.__myArgs.cmd)
         cmdParser = LRCmd.__parseCmdArgs(cmd)
         args = self.__genArgList(cmd, cmdParser.parse_args(self.__myArgs.cmd_args))
-        cmd.preExecute(args)
-        returnCode = cmd.execute(args)
-        cmd.postExecute(args, returnCode==0)
-        return returnCode
+        return cmd.doExecute(args)
     
     @staticmethod
     def printHelp(cmdName):
