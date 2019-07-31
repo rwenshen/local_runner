@@ -11,6 +11,8 @@ class LRCArgList:
             object.__setattr__(self, name, value)
         else:
             self.__setArg(name, value)
+    def __contains__(self, key):
+        return key in self.__myDict
 
     def __init__(self, cmd=None):
         self.__myDict = {}

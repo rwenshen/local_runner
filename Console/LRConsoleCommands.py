@@ -26,6 +26,6 @@ class show_env(LRCommand):
 
     def execute(self, args):
         print('All Environments:')
-        for env, value in LREnvironments.sIterEnv():
-            print('\t{}={}'.format(env, value))
+        for env, value, cat in LREnvironments.sIterEnv():
+            print('\t{}::{}={}'.format(cat, env, value))
         return 0
