@@ -1,5 +1,4 @@
-from ..LRObject import LRObjectMetaClass, LRObject
-from ..LROFactory import LROFactory
+from .. import *
 from .LRCArg import LRCArg
 from .LRCArgList import LRCArgList
 from . import BaseCommands
@@ -10,7 +9,7 @@ class LRCommandMetaClass(LRObjectMetaClass):
     def getBaseClassName():
         return 'LRCommand'
     @staticmethod
-    def isNeedInstance():
+    def isSingleton():
         return True
     @staticmethod
     def getIgnoreList():
@@ -21,6 +20,10 @@ class LRCommandMetaClass(LRObjectMetaClass):
 
 class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     
+    @staticmethod
+    def __getLogger():
+        return LRCore.getLogger('commands')
+
     @staticmethod
     def sGetCmdList():
         return LROFactory.sFindList(LRCommand.__name__)
@@ -64,8 +67,15 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def addArg(argName:str):
         def decorator(func):
             def wrapper(self):
-                assert LRCArg.sDoesArgExist(argName), 'Argument "{}" is not defined.'.format(argName)
-                self.__myArgs.append(argName)
+                indentent = '\t'
+                if not LRCArg.sDoesArgExist(argName):
+                    LRCommand.__getLogger().warning(f'{self.myName}: argument "{argName}" is not registered! Skipped.')
+                    LRCommand.__getLogger().warning(f'{indentent} in command {self.__class__}.')
+                elif argName in self.__myArgs:
+                    LRCommand.__getLogger().warning(f'{self.myName}: argument "{argName}" is duplicated! Skipped the second one.')
+                    LRCommand.__getLogger().warning(f'{indentent} in command {self.__class__}.')
+                else:
+                    self.__myArgs.append(argName)
                 return func(self)
             return wrapper
         return decorator
@@ -78,9 +88,8 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
             return wrapper
         return decorator
 
-
     def initialize(self):
-        raise NotImplementedError
+        LRCommand.__getLogger().info(f'{self.myName}: no arguments.')
 
     def doExecute(self, args:LRCArgList):
         self.preExecute(args)
@@ -90,6 +99,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def preExecute(self, args:LRCArgList):
         pass
     def execute(self, args:LRCArgList) -> int:
-        raise NotImplementedError
+        LRCommand.__getLogger().warning(f'{self.myName}: method "execute" is not implemented! Nothing is done.')
+        return 0
     def postExecute(self, args:LRCArgList, returnCode:int):
         pass

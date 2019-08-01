@@ -1,7 +1,8 @@
 import argparse
 from enum import Enum
+
+from ..Core import *
 from ..Core.Command import *
-from ..Core.LREnvironments import LREnvironments
 from . import LRConsoleCommands
 
 class LRCmd:
@@ -11,9 +12,10 @@ class LRCmd:
 
     def __collectCommandsInfo(self):
         self.__myCmdNameList = []
+        self.__myCmdNameList += LRConsoleCommands.LRConsoleCommands
         for lrc in LRCommand.sGetCmdList():
             cmdName = lrc.__class__.__name__
-            if not cmdName.startswith('__'):
+            if not cmdName.startswith('__') and cmdName not in LRConsoleCommands.LRConsoleCommands:
                 self.__myCmdNameList.append(cmdName)
 
     def initialize(self):

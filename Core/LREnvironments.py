@@ -1,5 +1,5 @@
-from ..Core.LRObject import LRObjectMetaClass, LRObject
 from .LROFactory import LROFactory
+from ..Core.LRObject import LRObjectMetaClass, LRObject
 
 class LREnvironmentsMetaClass(LRObjectMetaClass):
 
@@ -7,10 +7,7 @@ class LREnvironmentsMetaClass(LRObjectMetaClass):
     def getBaseClassName():
         return 'LREnvironments'
     @staticmethod
-    def isNeedInstance():
-        return True
-    @staticmethod
-    def isSingleton():
+    def isUnique():
         return True
 
     def __new__(cls, name, bases, attrs):

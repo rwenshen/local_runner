@@ -1,16 +1,7 @@
 '''
 LocalRunner
-
 '''
 
-import sys
-from .Console.LRCmd import LRCmd
-
-def runConsole():
-    cmd = LRCmd()
-    cmd.initialize()
-    returnCode = cmd.run()
-    sys.exit(returnCode)
 
 '''
 from .LRApp import LRApp

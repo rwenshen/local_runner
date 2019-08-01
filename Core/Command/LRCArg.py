@@ -1,5 +1,4 @@
-from ..LRObject import LRObjectMetaClass, LRObject
-from ..LROFactory import LROFactory
+from .. import *
 
 class LRCArgMetaClass(LRObjectMetaClass):
 
@@ -7,7 +6,7 @@ class LRCArgMetaClass(LRObjectMetaClass):
     def getBaseClassName():
         return 'LRCArg'
     @staticmethod
-    def isNeedInstance():
+    def isSingleton():
         return True
 
     def __new__(cls, name, bases, attrs):

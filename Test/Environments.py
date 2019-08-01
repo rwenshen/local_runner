@@ -1,4 +1,4 @@
-from ..Core.LREnvironments import LREnvironments
+from ..Core import *
 
 class Environments(LREnvironments):
 

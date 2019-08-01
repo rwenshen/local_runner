@@ -14,10 +14,10 @@ class LRObjectMetaClass(type):
     def getBaseClassName():
         return 'LRObject'
     @staticmethod
-    def isNeedInstance():
+    def isSingleton():
         return False
     @staticmethod
-    def isSingleton():
+    def isUnique():
         return False
     @staticmethod
     def getIgnoreList():

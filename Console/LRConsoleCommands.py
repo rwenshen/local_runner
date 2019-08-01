@@ -1,6 +1,11 @@
+from ..Core import *
 from ..Core.Command import *
-from ..Core.LREnvironments import LREnvironments
 from . import LRCmd
+
+LRConsoleCommands = [
+    'help',
+    'show_env',
+]
 
 class commandArg(LRCArg):
     '''The command for help.'''

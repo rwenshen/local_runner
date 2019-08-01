@@ -1,4 +1,10 @@
-from pathlib import Path
+
+class LRApp:
+  
+    def __init__(self):
+        pass
+
+'''
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QFileDialog
@@ -45,3 +51,4 @@ class LRApp:
             self.myWindow.error_box('Failed to save new project file!')
             exit()
         self.myWindow.updateUi()
+'''
