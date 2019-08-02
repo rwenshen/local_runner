@@ -1,6 +1,14 @@
+from ... import *
 from ..LRCommand import LRCommand, LRCArg
 
 class LRCompoundCommand(LRCommand):
+
+    def getLogger(self):
+        return LRCore.getLogger('command.compound')
+    def log(self, func, msg:str, *args, **kwargs):
+        func(msg, *args, **kwargs)
+        indentent = '\t'
+        func(f'{indentent}in compound command {self.__class__}.')
 
     def __init__(self):
         self.__mySubCmds = {}
@@ -12,12 +20,19 @@ class LRCompoundCommand(LRCommand):
     def addSubCmd(subCmdAlias:str, cmdName:str, **args):
         def decorator(func):
             def wrapper(self):
-                assert subCmdAlias not in self.__mySubCmds
-                self.__mySubCmds[subCmdAlias] = (cmdName, args)
+                # verify subcmd name
+                if subCmdAlias in self.__mySubCmds:
+                    self.logError(f'Sub command "{subCmdAlias}" has been added! Just skip.')
+                    return func(self)
+                # verify cmd
                 cmd = LRCommand.sGetCmd(cmdName)
-                # verify
-                assert cmd is not None
-                # for arguments
+                if cmd is None:
+                    self.logError(f'Commond "{cmdName}" for sub commond "{subCmdAlias}" is NOT registered! Just skip.')
+                    return func(self)
+                # verify arguments
+
+                # add the subcmd
+                self.__mySubCmds[subCmdAlias] = (cmdName, args)
                 for arg in cmd.iterArgs():
                     if arg.myName not in args:
                         self.__myAllArgs.setdefault(arg.myName, arg)

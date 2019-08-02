@@ -54,3 +54,11 @@ class cerror1(LRCommand):
 # non arguments cmd
 class nonArgCmd(LRCommand):
     pass
+
+# non arguments cmd
+class errorCompoundCmd(LRCompoundCommand):
+    @LRCompoundCommand.addSubCmd('sub1', 'test_enum', Platform='x1')
+    @LRCompoundCommand.addSubCmd('sub1', 'nonArgCmd')
+    @LRCompoundCommand.addSubCmd('error', 'nonex')
+    def initialize(self):
+        pass

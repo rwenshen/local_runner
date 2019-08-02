@@ -72,7 +72,6 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def addArg(argName:str):
         def decorator(func):
             def wrapper(self):
-                indentent = r'\t'
                 if not LRCArg.sDoesArgExist(argName):
                     self.logError(f'Argument "{argName}" is not registered! Skipped.')
                 elif argName in self.__myArgs:
