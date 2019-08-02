@@ -3,6 +3,15 @@ from .LRCArg import LRCArg
 from .LRCArgList import LRCArgList
 from . import BaseCommands
 
+class LRCommandLogger(LRCore.LRLogger):
+    def getLogger(self):
+        return LRCore.getLogger('command')
+        
+    def log(self, func, msg:str, *args, **kwargs):
+        func(msg, *args, **kwargs)
+        indentent = '\t'
+        func(f'{indentent}in command {self.__class__}.')
+
 class LRCommandMetaClass(LRObjectMetaClass):
 
     @staticmethod
@@ -16,14 +25,10 @@ class LRCommandMetaClass(LRObjectMetaClass):
         return BaseCommands.BaseCommandsList
 
     def __new__(cls, name, bases, attrs):
-        return LRCommandMetaClass.newImpl(cls, name, bases, attrs)
+        return LRCommandMetaClass.newImpl(cls, name, (*bases, LRCommandLogger), attrs)
 
 class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     
-    @staticmethod
-    def __getLogger():
-        return LRCore.getLogger('commands')
-
     @staticmethod
     def sGetCmdList():
         return LROFactory.sFindList(LRCommand.__name__)
@@ -36,7 +41,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         self.__myArgs = []
         self.__myCategories = []
         self.initialize()
-
+        
         cat = ''
         if len(self.myCategories) > 0:
             cat = '/'.join(self.__myCategories)
@@ -67,13 +72,11 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def addArg(argName:str):
         def decorator(func):
             def wrapper(self):
-                indentent = '\t'
+                indentent = r'\t'
                 if not LRCArg.sDoesArgExist(argName):
-                    LRCommand.__getLogger().warning(f'{self.myName}: argument "{argName}" is not registered! Skipped.')
-                    LRCommand.__getLogger().warning(f'{indentent} in command {self.__class__}.')
+                    self.logError(f'Argument "{argName}" is not registered! Skipped.')
                 elif argName in self.__myArgs:
-                    LRCommand.__getLogger().warning(f'{self.myName}: argument "{argName}" is duplicated! Skipped the second one.')
-                    LRCommand.__getLogger().warning(f'{indentent} in command {self.__class__}.')
+                    self.logWarning(f'Argument "{argName}" is duplicated! Skipped the second one.')
                 else:
                     self.__myArgs.append(argName)
                 return func(self)
@@ -89,7 +92,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         return decorator
 
     def initialize(self):
-        LRCommand.__getLogger().info(f'{self.myName}: no arguments.')
+        self.logInfo(f'No arguments.')
 
     def doExecute(self, args:LRCArgList):
         self.preExecute(args)
@@ -99,7 +102,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def preExecute(self, args:LRCArgList):
         pass
     def execute(self, args:LRCArgList) -> int:
-        LRCommand.__getLogger().warning(f'{self.myName}: method "execute" is not implemented! Nothing is done.')
+        self.logWarning(f'Method "execute" is not implemented! Nothing is done.')
         return 0
     def postExecute(self, args:LRCArgList, returnCode:int):
         pass

@@ -1,57 +1,56 @@
 from . import LRCore
 
+class LROFactory(LRCore.LRLogger):
 
-class LROFactory:
+    __singleton = None
 
-    __lroDict = {}
+    def __init__(self):
+        LROFactory.__singleton = self
+        self.__lroDict = {}
 
-    @staticmethod
-    def __getLogger():
+    def getLogger(self):
         return LRCore.getLogger('lro_factory.register')
 
-    @staticmethod
-    def sRegisterLRO(lroClass, metaClass):
+    def __register(self, lroClass, metaClass):
         baseTypeName = metaClass.getBaseClassName()
         isSingleton = metaClass.isSingleton()
         isUnique = metaClass.isUnique()
         ignoreList = metaClass.getIgnoreList()
 
         indentent = '\t'
-        LROFactory.__getLogger().debug(f'{baseTypeName}: class: {lroClass}, meta: {metaClass}')
-        LROFactory.__getLogger().debug(f'{indentent}isSingleton: {isSingleton}, isSingleton: {isUnique}')
-        LROFactory.__getLogger().debug(f'{indentent}ignoreList: {ignoreList}')
+        self.logDebug(f'{baseTypeName}: class: {lroClass}, meta: {metaClass}')
+        self.logDebug(f'{indentent}isSingleton: {isSingleton}, isUnique: {isUnique}')
+        self.logDebug(f'{indentent}ignoreList: {ignoreList}')
 
         # base class should not be registered
         if lroClass.__name__ == baseTypeName:
-            LROFactory.__getLogger().info(f'skipped {baseTypeName}: skip base class {lroClass}.')
+            self.logInfo(f'skipped {baseTypeName}: skip base class {lroClass}.')
             return
         elif lroClass.__name__ in ignoreList:
-            LROFactory.__getLogger().info(f'skipped {baseTypeName}: in ignore list for {lroClass}.')
+            self.logInfo(f'skipped {baseTypeName}: in ignore list for {lroClass}.')
             return
 
-        if baseTypeName not in LROFactory.__lroDict:
-            LROFactory.__lroDict[baseTypeName] = {}
-        lroSubDict = LROFactory.__lroDict[baseTypeName]
+        lroSubDict = self.__lroDict.setdefault(baseTypeName, {})
 
         # handle duplicated class name
         className = lroClass.__name__
         if className in lroSubDict:
-            LROFactory.__getLogger().error(f'{className} has been registered!')
-            LROFactory.__getLogger().error(f'{indentent}to be registered: {lroClass}')
+            self.logError(f'{className} has been registered!')
+            self.logError(f'{indentent}to be registered: {lroClass}')
             registeredClass = lroSubDict[className]
             if not isinstance(registeredClass, type):
                 registeredClass = registeredClass.__class__
-            LROFactory.__getLogger().error(f'{indentent}registered: {registeredClass}')
+            self.logError(f'{indentent}registered: {registeredClass}')
             return
 
         # handle unique class
         if isUnique:
             if len(lroSubDict) > 0:
-                LROFactory.__getLogger().error(f'{baseTypeName} can only has one implement!')
-                LROFactory.__getLogger().error(f'{indentent}to be registered: {lroClass}')
+                self.logError(f'{baseTypeName} can only has one implement!')
+                self.logError(f'{indentent}to be registered: {lroClass}')
                 for value in lroSubDict.values():
                     registeredClass = value.__class__
-                    LROFactory.__getLogger().error(f'{indentent}registered: {registeredClass}')
+                    self.logError(f'{indentent}registered: {registeredClass}')
                     return
 
         if isUnique or isSingleton:
@@ -59,34 +58,41 @@ class LROFactory:
         else:
             lroSubDict[className] = lroClass
         
-        LROFactory.__getLogger().info(f'{baseTypeName}: {lroClass} registered.')
+        self.logInfo(f'{baseTypeName}: {lroClass} registered.')
 
+    def __findList(self, baseTypeName):
+        return self.__lroDict[baseTypeName].values() if baseTypeName in self.__lroDict else []
+    def __find(self, baseTypeName, typeName):
+        return self.__lroDict[baseTypeName].get(typeName, None) if baseTypeName in self.__lroDict else None
+    def __contain(self, baseTypeName, typeName):
+        return typeName in self.__lroDict[baseTypeName] if baseTypeName in self.__lroDict else False
+    #def __getUnique(baseTypeName):
+    #        lroSubDict = LROFactory.__lroDict[baseTypeName]
+    #        if len(lroSubDict) == 1:
+    #            for unique in lroSubDict.values():
+    #                return unique
+    #    return None
+
+    @staticmethod
+    def sCreate():
+        if LROFactory.__singleton is None:
+            LROFactory()
+    
+    @staticmethod
+    def sRegisterLRO(lroClass, metaClass):
+        LROFactory.__singleton.__register(lroClass, metaClass)
     @staticmethod
     def sFindList(baseTypeName):
-        if baseTypeName in LROFactory.__lroDict:
-            return LROFactory.__lroDict[baseTypeName].values()
-        return []
-
+        return LROFactory.__singleton.__findList(baseTypeName)
     @staticmethod
     def sFind(baseTypeName, typeName):
-        if baseTypeName in LROFactory.__lroDict:
-            return LROFactory.__lroDict[baseTypeName].get(typeName, None)
-        return None
-
+        return LROFactory.__singleton.__find(baseTypeName, typeName)
     @staticmethod
     def sContain(baseTypeName, typeName):
-        if baseTypeName in LROFactory.__lroDict:
-            return LROFactory.__lroDict[baseTypeName].get(typeName, None) is not None
-        return False
-
-    @staticmethod
-    def sGetSingleton(typeName):
-        if typeName in LROFactory.__lroDict:
-            lroSubDict = LROFactory.__lroDict[typeName]
-            assert len(lroSubDict) == 1
-            for singleton in lroSubDict.values():
-                return singleton
-        return None
+        return LROFactory.__singleton.__contain(baseTypeName, typeName)
+    #@staticmethod
+    #def sGetUnique(baseTypeName):
+    #    return LROFactory.__singleton.__getUnique(baseTypeName)
 
 #    @staticmethod
 #    def sCreateLRO(saveData:dict, _expectType:type, needDefault:bool=False):
@@ -100,3 +106,5 @@ class LROFactory:
 #            return _expectType()
 #        else:
 #            return None
+
+LROFactory.sCreate()

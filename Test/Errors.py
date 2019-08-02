@@ -17,6 +17,25 @@ class DupEnvironments(LREnvironments):
     def initialize(self):
         pass
 
+
+############################################################
+# Arguments
+############################################################
+class Path(LRCArg):
+    '''A path 2'''
+    pass
+
+class TestArg(LRCArg):
+    '''A test 2'''
+    pass
+
+class ErrorArg(LRCArg):
+    @LRCArg.argType(1)
+    @LRCArg.argDefault(1)
+    @LRCArg.argChoices('x', 'x', 1, 1, 'z', 7.5)
+    def initialize(self):
+        pass
+
 ############################################################
 # Commands
 ############################################################
@@ -27,6 +46,8 @@ class cerror1(LRCommand):
     @LRCommand.addArg('Path')
     @LRCommand.addArg('Path')
     @LRCommand.addArg('Path')
+    @LRCommand.addArg('Path')
+    @LRCommand.addArg('Error')
     def initialize(self):
         pass
 

@@ -6,7 +6,7 @@ config = {
 
     'formatters' : {
         'default' : {
-            'format' : '%(name)s - %(levelname)s: %(message)s'
+            'format' : '[%(name)s] %(levelname)s: %(message)s'
         },
     },
 
@@ -32,13 +32,13 @@ config = {
     },
     
     'loggers' : {
-        'lr.core' : {
+        'lr' : {
             'level': logging.DEBUG,
             'handlers': ['cw'],
         },
-        'lr.core.commands' : {
+        'lr.core.command' : {
             'level' : logging.DEBUG,
-            'handlers' : ['ci'],
+            'handlers' : ['cd'],
             'propagate' : False,
         },
     },

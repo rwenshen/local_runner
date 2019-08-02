@@ -31,5 +31,8 @@ class IncredibuildArg(LRCArg):
 
 class PathArg(LRCArg):
     '''A path'''
-    def initialize(self):
-        pass
+    pass
+
+class Test(LRCArg):
+    '''A test arg'''
+    pass
