@@ -59,6 +59,9 @@ class nonArgCmd(LRCommand):
 class errorCompoundCmd(LRCompoundCommand):
     @LRCompoundCommand.addSubCmd('sub1', 'test_enum', Platform='x1')
     @LRCompoundCommand.addSubCmd('sub1', 'nonArgCmd')
-    @LRCompoundCommand.addSubCmd('error', 'nonex')
+    @LRCompoundCommand.addSubCmd('error1', 'nonex')
+    @LRCompoundCommand.addSubCmd('error2', 'test_enum', nonArg=1)
+    @LRCompoundCommand.addSubCmd('error3', 'test_shell', Platform=1)
+    @LRCompoundCommand.addSubCmd('error4', 'test_shell', Platform='Error')
     def initialize(self):
         pass

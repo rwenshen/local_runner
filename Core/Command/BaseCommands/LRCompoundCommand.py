@@ -30,6 +30,16 @@ class LRCompoundCommand(LRCommand):
                     self.logError(f'Commond "{cmdName}" for sub commond "{subCmdAlias}" is NOT registered! Just skip.')
                     return func(self)
                 # verify arguments
+                cmdArgNames = [arg.myName for arg in cmd.iterArgs()]
+                for argName, value in args.items():
+                    if argName not in cmdArgNames:
+                        self.logWarning(f'Argument "{argName}"" is NOT in Commond "{cmdName}" for sub commond "{subCmdAlias}"!')
+                    else:
+                        arg = LRCArg.sGetArg(argName)
+                        if not isinstance(value, arg.myType):
+                            self.logWarning(f'"{value}" is NOT the type of arguement "{argName}"" in Commond "{cmdName}" for sub commond "{subCmdAlias}"!')
+                        elif arg.myChoices is not None and value not in arg.myChoices:
+                            self.logWarning(f'"{value}" is NOT in the choice list of arguement "{argName}"" in Commond "{cmdName}" for sub commond "{subCmdAlias}"!')
 
                 # add the subcmd
                 self.__mySubCmds[subCmdAlias] = (cmdName, args)

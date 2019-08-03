@@ -98,6 +98,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         returnCode = self.execute(args)
         self.postExecute(args, returnCode)
         return returnCode
+
     def preExecute(self, args:LRCArgList):
         pass
     def execute(self, args:LRCArgList) -> int:
