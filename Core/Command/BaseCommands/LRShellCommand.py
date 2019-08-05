@@ -3,6 +3,7 @@ import locale
 import subprocess
 import shlex
 import threading
+from ... import *
 from ..LRCommand import LRCommand, LRCArg
 from ...LREnvironments import LREnvironments
 
@@ -14,12 +15,19 @@ class silentArg(LRCArg):
         pass 
 
 class LRShellCommand(LRCommand):
+
+    def getLogger(self):
+        return LRCore.getLogger('command.shell')
+    def log(self, func, msg:str, *args, **kwargs):
+        func(msg, *args, **kwargs)
+        indentent = '\t'
+        func(f'{indentent}in shell command {self.__class__}.')
+
     def __init__(self):
         super().__init__()
         
         self.__shell = LREnvironments.sSingleton.SHELL
         self.__currentIn = None
-        assert len(self.__shell) > 0, 'Missing environment SHELL!'
 
     @LRCommand.addArg('silent')
     def initialize(self):
@@ -32,12 +40,21 @@ class LRShellCommand(LRCommand):
         self.__currentIn.flush()
 
     @staticmethod
-    def __processOutput(p):
+    def __processStdout(p, logger):
         for line in iter(p.stdout.readline, b''):
             line = str(line, encoding=locale.getpreferredencoding())
             line = line.replace('\n', '')
             line = line.replace('\r', '')
-            print(line)
+            logger.info(line)
+        p.stdout.close()
+
+    @staticmethod
+    def __processStderr(p, logger):
+        for line in iter(p.stderr.readline, b''):
+            line = str(line, encoding=locale.getpreferredencoding())
+            line = line.replace('\n', '')
+            line = line.replace('\r', '')
+            logger.error(line)
         p.stdout.close()
 
     def execute(self, args):
@@ -45,16 +62,22 @@ class LRShellCommand(LRCommand):
         p = subprocess.Popen(shlex.split(self.__shell),
                         stdin=subprocess.PIPE,
                         stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
+                        stderr=subprocess.PIPE,
                         cwd=self.myCwd)
 
         if not args.silent:
-            t = threading.Thread(
-                            target=LRShellCommand.__processOutput,
-                            args=[p],
+            tStrout = threading.Thread(
+                            target=LRShellCommand.__processStdout,
+                            args=[p, LRCore.getLogger('shell')],
                             name='Executing '+self.myName)
-            t.daemon = True
-            t.start()
+            tStrout.daemon = True
+            tStrout.start()
+            tStrerr = threading.Thread(
+                            target=LRShellCommand.__processStderr,
+                            args=[p, LRCore.getLogger('shell')],
+                            name='Executing '+self.myName)
+            tStrerr.daemon = True
+            tStrerr.start()
         
         self.__currentIn = p.stdin
         self.doInput(args)

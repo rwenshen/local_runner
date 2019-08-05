@@ -17,7 +17,7 @@ class LRCompoundCommand(LRCommand):
         for arg in super().iterArgs():
             self.__myAllArgs[arg.myName] = arg
         if len(self.__mySubCmds) == 0:
-            self.logWarning(f'Empty subcmd list!')
+            self.logInfo(f'Empty sub commond list.')
 
     def addSubCmd(subCmdAlias:str, cmdName:str, **args):
         def decorator(func):

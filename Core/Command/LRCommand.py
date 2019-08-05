@@ -41,7 +41,11 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         self.__myArgs = []
         self.__myCategories = []
         self.initialize()
-        
+        # if initialize is overridden, call super class version also.
+        cl = self.__class__
+        if cl != LRCommand and cl.initialize != cl.__mro__[1].initialize:
+            super(cl, self).initialize()
+
         cat = ''
         if len(self.myCategories) > 0:
             cat = '/'.join(self.__myCategories)
@@ -91,7 +95,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         return decorator
 
     def initialize(self):
-        self.logInfo(f'No arguments.')
+        pass
 
     def doExecution(self, args:LRCArgList):
         self.getLogger().info(f'Start execution of command {self.__class__}...')

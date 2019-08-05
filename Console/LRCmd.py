@@ -19,6 +19,9 @@ class LRCmd:
                 self.__myCmdNameList.append(cmdName)
 
     def initialize(self):
+        # check shell
+        # TODO
+
         # no commands defined
         assert len(self.__myCmdNameList) > 0
 
@@ -38,7 +41,7 @@ class LRCmd:
         cmd = LRCommand.sGetCmd(self.__myArgs.cmd)
         cmdParser = LRCmd.__parseCmdArgs(cmd)
         args = self.__genArgList(cmd, cmdParser.parse_args(self.__myArgs.cmd_args))
-        return cmd.doExecute(args)
+        return cmd.doExecution(args)
     
     @staticmethod
     def printHelp(cmdName):

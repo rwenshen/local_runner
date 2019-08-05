@@ -16,6 +16,7 @@ class LRCArgList:
 
     def __init__(self, cmd=None):
         self.__myDict = {}
+        self.__myCmd = cmd
         if cmd is not None:
             for arg in cmd.iterArgs():
                 self.__myDict[arg.myName] = arg.myDefault

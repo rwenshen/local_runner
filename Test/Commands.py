@@ -15,6 +15,9 @@ class test_shell(LRShellCommand):
         self.input('set PLATFORM')
         self.input('start notepad')
 
+class test_shell2(test_shell):
+    pass
+
 class test_enum(LRCommand):
     '''Test Commond2'''
     @LRCommand.addArg('EnumTest')
