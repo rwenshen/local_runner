@@ -93,10 +93,12 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def initialize(self):
         self.logInfo(f'No arguments.')
 
-    def doExecute(self, args:LRCArgList):
+    def doExecution(self, args:LRCArgList):
+        self.getLogger().info(f'Start execution of command {self.__class__}...')
         self.preExecute(args)
         returnCode = self.execute(args)
         self.postExecute(args, returnCode)
+        self.getLogger().info(f'Finish execution of command {self.__class__}, with return code: "{returnCode}".')
         return returnCode
 
     def preExecute(self, args:LRCArgList):

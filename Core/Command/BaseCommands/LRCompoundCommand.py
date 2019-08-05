@@ -16,6 +16,8 @@ class LRCompoundCommand(LRCommand):
         super().__init__()
         for arg in super().iterArgs():
             self.__myAllArgs[arg.myName] = arg
+        if len(self.__mySubCmds) == 0:
+            self.logWarning(f'Empty subcmd list!')
 
     def addSubCmd(subCmdAlias:str, cmdName:str, **args):
         def decorator(func):
@@ -56,7 +58,7 @@ class LRCompoundCommand(LRCommand):
             
     def __verifyCmd(self, subCmdAlias:str):
         assert subCmdAlias in self.__mySubCmds
-    def executeSubCmd(self, subCmdAlias:str, args):
+    def __executeSubCmd(self, subCmdAlias:str, args):
         self.__verifyCmd(subCmdAlias)
         cmdInfo = self.__mySubCmds[subCmdAlias]
         cmdName = cmdInfo[0]
@@ -64,16 +66,18 @@ class LRCompoundCommand(LRCommand):
         subArgs = args.copy()
         for predefinedArg, value in cmdInfo[1].items():
             subArgs.__setattr__(predefinedArg, value)
-        return cmd.doExecute(subArgs)
-    def executeSubCmdList(self, subCmds, args):
+        return cmd.doExecution(subArgs)
+    def __doSubCmdExecution(self, subCmds, args):
+        indentent = '\t'
+        super().getLogger().info(f'Start execution of compound command {self.__class__}...')
+        super().getLogger().info(f'{indentent} to be executed commands: {subCmds}')
         for subCmdAlias in subCmds:
-            returnCode = self.executeSubCmd(subCmdAlias, args)
+            returnCode = self.__executeSubCmd(subCmdAlias, args)
             if returnCode != 0:
+                super().getLogger().info(f'Finish execution of compound command {self.__class__}, failed on sub command {subCmdAlias}.')
                 return returnCode
+        super().getLogger().info(f'Finish execution of compound command {self.__class__}.')
         return 0
-
-    def doExecute(self, args):
-        return self.executeSubCmdList(self.__mySubCmds.keys(), args)
 
     def preExecute(self, args):
         raise NotImplementedError
@@ -82,16 +86,38 @@ class LRCompoundCommand(LRCommand):
     def postExecute(self, args, successful:bool):
         raise NotImplementedError
 
+    def getToBeExecuted(self, args):
+        return self.__mySubCmds.keys()
+    def doExecution(self, args):
+        toBeExecuted = self.getToBeExecuted(args)
+        if isinstance(toBeExecuted, str):
+            self.__myToBeExecutedCmds = [toBeExecuted]
+        else:
+            try:
+                self.__myToBeExecutedCmds = [cmd for cmd in toBeExecuted]
+                if len(self.__myToBeExecutedCmds) == 0:
+                    self.logWarning(f'Empty subcmd list or empty "getToBeExecuted" return! Nothing will be executed.')
+                    self.__myToBeExecutedCmds = None
+            except:
+                self.logError(f'To be executed "{toBeExecuted}" is not a str or iterable senquence! Exuction was skipped.')
+                self.__myToBeExecutedCmds = None
+            finally:
+                pass
+            
+        if self.__myToBeExecutedCmds is not None:
+            return self.__doSubCmdExecution(self.__myToBeExecutedCmds, args)
+
+        return -1
+
 class LRSelectionCommand(LRCompoundCommand):
 
-    def doExecute(self, args):
-        toExecute = self.getSelectedSubCmd(args)
-        if isinstance(toExecute, list):
-            self.__mySelectedCmds = [cmd for cmd in toExecute]
-        else:
-            self.__mySelectedCmds = [toExecute]
+    def getLogger(self):
+        return LRCore.getLogger('command.compound.selection')
+    def log(self, func, msg:str, *args, **kwargs):
+        func(msg, *args, **kwargs)
+        indentent = '\t'
+        func(f'{indentent}in selection command {self.__class__}.')
 
-        return self.executeSubCmdList(self.__mySelectedCmds, args)
-
-    def getSelectedSubCmd(self, args)->str:
-        raise NotImplementedError
+    def getToBeExecuted(self, args):
+        self.logError(f'Method "getToBeExecuted" is NOT implemented! Nothing will be executed.')
+        return None
