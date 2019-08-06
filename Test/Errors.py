@@ -55,6 +55,23 @@ class cerror1(LRCommand):
 class nonArgCmd(LRCommand):
     pass
 
+# cmd using wrong arg in execution
+class errorUsingArgCmd(LRCommand):
+    @LRCommand.addArg('EnumTest')
+    @LRCommand.addArg('Platform')
+    @LRCommand.addArg('Incredibuild')
+    def initialize(self):
+        pass
+    def execute(self, args):
+        # non-exist args
+        args.NotExist = 1
+        print(args.NotExist)
+        # error type
+        args.Incredibuild = 1
+        # not in choices list
+        args.Platform = '1'
+        return 0
+
 # for compound cmd
 class errorCompoundCmd(LRCompoundCommand):
     @LRCompoundCommand.addSubCmd('sub1', 'test_enum', Platform='x1')

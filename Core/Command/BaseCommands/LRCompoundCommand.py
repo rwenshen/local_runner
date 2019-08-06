@@ -62,11 +62,11 @@ class LRCompoundCommand(LRCommand):
         self.__verifyCmd(subCmdAlias)
         cmdInfo = self.__mySubCmds[subCmdAlias]
         cmdName = cmdInfo[0]
-        cmd = LRCommand.sGetCmd(cmdName)
-        subArgs = args.copy()
+        subcmd = LRCommand.sGetCmd(cmdName)
+        subArgs = args.cloneFor(subcmd)
         for predefinedArg, value in cmdInfo[1].items():
             subArgs.__setattr__(predefinedArg, value)
-        return cmd.doExecution(subArgs)
+        return subcmd.doExecution(subArgs)
     def __doSubCmdExecution(self, subCmds, args):
         indentent = '\t'
         super().getLogger().info(f'Start execution of compound command {self.__class__}...')
