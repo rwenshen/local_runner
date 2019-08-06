@@ -4,27 +4,20 @@ from .LROFactory import LROFactory
 
 class LRObjectMetaClass(type):
 
-    @staticmethod
+    @classmethod
     def newImpl(cls, name, bases, attrs):
         finalType = type.__new__(cls, name, bases, attrs)
         LROFactory.sRegisterLRO(finalType, cls)
         return finalType
 
-    @staticmethod
-    def getBaseClassName():
-        return 'LRObject'
-    @staticmethod
-    def isSingleton():
-        return False
-    @staticmethod
-    def isUnique():
-        return False
-    @staticmethod
-    def getIgnoreList():
-        return []
-    
+    baseClassName = 'LRObject'
+    extraInterfaces = []
+    isSingleton = False
+    isUnique = False
+    ignoreList = []
+
     def __new__(cls, name, bases, attrs):
-        return LRObjectMetaClass.newImpl(cls, name, bases, attrs)
+        return cls.newImpl(name, (*bases, *cls.extraInterfaces), attrs)
 
 class LRObject(metaclass=LRObjectMetaClass):
     pass

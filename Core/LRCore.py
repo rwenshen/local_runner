@@ -1,12 +1,13 @@
 import logging
 
-def getLogger(name:str=''):
-    return logging.getLogger(f'lr.core.{name}')
-
 class LRLogger:
 
+    @staticmethod
+    def sGetLogger(name:str=''):
+        return logging.getLogger(f'lr.core.{name}')
+
     def getLogger(self):
-        raise NotImplementedError
+        return LRLogger.sGetLogger('ungrouped')
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
 

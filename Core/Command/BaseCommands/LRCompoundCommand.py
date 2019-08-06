@@ -4,7 +4,7 @@ from ..LRCommand import LRCommand, LRCArg
 class LRCompoundCommand(LRCommand):
 
     def getLogger(self):
-        return LRCore.getLogger('command.compound')
+        return LRCore.LRLogger.sGetLogger('command.compound')
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
         indentent = '\t'
@@ -19,6 +19,7 @@ class LRCompoundCommand(LRCommand):
         if len(self.__mySubCmds) == 0:
             self.logInfo(f'Empty sub commond list.')
 
+    @staticmethod
     def addSubCmd(subCmdAlias:str, cmdName:str, **args):
         def decorator(func):
             def wrapper(self):
@@ -112,7 +113,7 @@ class LRCompoundCommand(LRCommand):
 class LRSelectionCommand(LRCompoundCommand):
 
     def getLogger(self):
-        return LRCore.getLogger('command.compound.selection')
+        return LRCore.LRLogger.sGetLogger('command.compound.selection')
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
         indentent = '\t'

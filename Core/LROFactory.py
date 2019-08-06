@@ -9,13 +9,13 @@ class LROFactory(LRCore.LRLogger):
         self.__lroDict = {}
 
     def getLogger(self):
-        return LRCore.getLogger('lro_factory.register')
+        return LRCore.LRLogger.sGetLogger('lro_factory.register')
 
     def __register(self, lroClass, metaClass):
-        baseTypeName = metaClass.getBaseClassName()
-        isSingleton = metaClass.isSingleton()
-        isUnique = metaClass.isUnique()
-        ignoreList = metaClass.getIgnoreList()
+        baseTypeName = metaClass.baseClassName
+        isSingleton = metaClass.isSingleton
+        isUnique = metaClass.isUnique
+        ignoreList = metaClass.ignoreList
 
         indentent = '\t'
         self.logDebug(f'{baseTypeName}: class: {lroClass}, meta: {metaClass}')

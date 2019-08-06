@@ -5,6 +5,9 @@ from ..Core import *
 from ..Core.Command import *
 from . import LRConsoleCommands
 
+class __shellCheck(LRShellCommand):
+    pass
+
 class LRCmd:
     
     def __init__(self):
@@ -20,7 +23,12 @@ class LRCmd:
 
     def initialize(self):
         # check shell
-        # TODO
+        checkCmd = LRCommand.sGetCmd('__shellCheck')
+        argList = LRCArgList(checkCmd)
+        argList.silent = True
+        if checkCmd.doExecution(argList) != 0:
+            # TODO
+            pass
 
         # no commands defined
         assert len(self.__myCmdNameList) > 0

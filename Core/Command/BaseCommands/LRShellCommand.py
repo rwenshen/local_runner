@@ -17,11 +17,11 @@ class silentArg(LRCArg):
 class LRShellCommand(LRCommand):
 
     def getLogger(self):
-        return LRCore.getLogger('command.shell')
+        return LRCore.LRLogger.sGetLogger('command.shell')
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
         indentent = '\t'
-        func(f'{indentent}in shell command {self.__class__}.')
+        func(f'{indentent}in shell command {self.__class__} with shell "{self.__shell}".')
 
     def __init__(self):
         super().__init__()
@@ -32,12 +32,6 @@ class LRShellCommand(LRCommand):
     @LRCommand.addArg('silent')
     def initialize(self):
         pass
-
-    def input(self, input:str):
-        assert self.__currentIn is not None
-        toWrite = input + os.linesep
-        self.__currentIn.write(bytes(toWrite, encoding=locale.getpreferredencoding()))
-        self.__currentIn.flush()
 
     @staticmethod
     def __processStdout(p, logger):
@@ -55,7 +49,7 @@ class LRShellCommand(LRCommand):
             line = line.replace('\n', '')
             line = line.replace('\r', '')
             logger.error(line)
-        p.stdout.close()
+        p.stderr.close()
 
     def execute(self, args):
         
@@ -68,13 +62,13 @@ class LRShellCommand(LRCommand):
         if not args.silent:
             tStrout = threading.Thread(
                             target=LRShellCommand.__processStdout,
-                            args=[p, LRCore.getLogger('shell')],
+                            args=[p, LRCore.LRLogger.sGetLogger('shell')],
                             name='Executing '+self.myName)
             tStrout.daemon = True
             tStrout.start()
             tStrerr = threading.Thread(
                             target=LRShellCommand.__processStderr,
-                            args=[p, LRCore.getLogger('shell')],
+                            args=[p, LRCore.LRLogger.sGetLogger('shell')],
                             name='Executing '+self.myName)
             tStrerr.daemon = True
             tStrerr.start()
@@ -86,8 +80,14 @@ class LRShellCommand(LRCommand):
         p.wait()
         return p.returncode
 
+    def input(self, input:str):
+        assert self.__currentIn is not None
+        toWrite = input + os.linesep
+        self.__currentIn.write(bytes(toWrite, encoding=locale.getpreferredencoding()))
+        self.__currentIn.flush()
+
     @property
     def myCwd(self):
-        raise NotImplementedError
+        return '.'
     def doInput(self, args):
-        raise NotImplementedError
+        self.logInfo(f'Nothing was input.')

@@ -2,7 +2,7 @@ from .. import *
 
 class LRCArgLogger(LRCore.LRLogger):
     def getLogger(self):
-        return LRCore.getLogger('command.arg')
+        return LRCore.LRLogger.sGetLogger('command.arg')
         
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
@@ -10,16 +10,9 @@ class LRCArgLogger(LRCore.LRLogger):
         func(f'{indentent}in argument {self.__class__} with name "{self.myName}".')
 
 class LRCArgMetaClass(LRObjectMetaClass):
-
-    @staticmethod
-    def getBaseClassName():
-        return 'LRCArg'
-    @staticmethod
-    def isSingleton():
-        return True
-
-    def __new__(cls, name, bases, attrs):
-        return LRCArgMetaClass.newImpl(cls, name, (*bases, LRCArgLogger), attrs)
+    baseClassName = 'LRCArg'
+    extraInterfaces = (LRCArgLogger,)
+    isSingleton = True
 
 class LRCArg(LRObject, metaclass=LRCArgMetaClass):
 
@@ -95,6 +88,7 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
     def myShortName(self):
         return self.__shortName
 
+    @staticmethod
     def argType(argType:type):
         def decorator(func):
             def wrapper(self):
@@ -106,6 +100,7 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
             return wrapper
         return decorator
 
+    @staticmethod
     def argPlacement():
         def decorator(func):
             def wrapper(self):
@@ -114,6 +109,7 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
             return wrapper
         return decorator
 
+    @staticmethod
     def argChoices(*args):
         def decorator(func):
             def wrapper(self):
@@ -126,6 +122,7 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
             return wrapper
         return decorator
 
+    @staticmethod
     def argDefault(defaultValue):
         def decorator(func):
             def wrapper(self):
@@ -134,6 +131,7 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
             return wrapper
         return decorator
 
+    @staticmethod
     def argShortName(shortName:str):
         def decorator(func):
             def wrapper(self):

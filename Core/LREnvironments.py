@@ -2,16 +2,8 @@ from .LROFactory import LROFactory
 from ..Core.LRObject import LRObjectMetaClass, LRObject
 
 class LREnvironmentsMetaClass(LRObjectMetaClass):
-
-    @staticmethod
-    def getBaseClassName():
-        return 'LREnvironments'
-    @staticmethod
-    def isUnique():
-        return True
-
-    def __new__(cls, name, bases, attrs):
-        return LREnvironmentsMetaClass.newImpl(cls, name, bases, attrs)
+    baseClassName = 'LREnvironments'
+    isUnique = True
 
 class LREnvInfo:
     def __init__(self, value, category):

@@ -5,7 +5,7 @@ from . import BaseCommands
 
 class LRCommandLogger(LRCore.LRLogger):
     def getLogger(self):
-        return LRCore.getLogger('command')
+        return LRCore.LRLogger.sGetLogger('command')
         
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
@@ -13,19 +13,10 @@ class LRCommandLogger(LRCore.LRLogger):
         func(f'{indentent}in command {self.__class__}.')
 
 class LRCommandMetaClass(LRObjectMetaClass):
-
-    @staticmethod
-    def getBaseClassName():
-        return 'LRCommand'
-    @staticmethod
-    def isSingleton():
-        return True
-    @staticmethod
-    def getIgnoreList():
-        return BaseCommands.BaseCommandsList
-
-    def __new__(cls, name, bases, attrs):
-        return LRCommandMetaClass.newImpl(cls, name, (*bases, LRCommandLogger), attrs)
+    baseClassName = 'LRCommand'
+    extraInterfaces = (LRCommandLogger,)
+    isSingleton = True
+    ignoreList = BaseCommands.BaseCommandsList
 
 class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     
@@ -73,6 +64,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def containArg(self, argName:str):
         return argName in self.__myArgs
 
+    @staticmethod
     def addArg(argName:str):
         def decorator(func):
             def wrapper(self):
@@ -85,6 +77,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
                 return func(self)
             return wrapper
         return decorator
+    @staticmethod
     def setCategory(category:str):
         def decorator(func):
             def wrapper(self):
@@ -103,6 +96,8 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         returnCode = self.execute(args)
         self.postExecute(args, returnCode)
         self.getLogger().info(f'Finish execution of command {self.__class__}, with return code: "{returnCode}".')
+        if returnCode != 0:
+            self.logError(f'Command {self.__class__} was exit with code "{returnCode}".')
         return returnCode
 
     def preExecute(self, args:LRCArgList):

@@ -5,7 +5,7 @@ from . import LRCommand
 class LRCArgList(LRCore.LRLogger):
 
     def getLogger(self):
-        return LRCore.getLogger('command.arg')
+        return LRCore.LRLogger.sGetLogger('command.arg')
 
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)

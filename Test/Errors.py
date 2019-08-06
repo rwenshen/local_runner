@@ -70,7 +70,7 @@ class errorUsingArgCmd(LRCommand):
         args.Incredibuild = 1
         # not in choices list
         args.Platform = '1'
-        return 0
+        return 1
 
 # for compound cmd
 class errorCompoundCmd(LRCompoundCommand):
