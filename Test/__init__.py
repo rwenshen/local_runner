@@ -39,6 +39,7 @@ config = {
         'lr.core.shell' : {
             'level': logging.INFO,
             'handlers': ['ci'],
+            'propagate' : False,
         },
         'lr.core.command' : {
             'level' : logging.DEBUG,
