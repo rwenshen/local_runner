@@ -102,7 +102,10 @@ class LRCmd:
 
     @staticmethod
     def __processPlacementArg(argSettings):
-        pass
+        # with default value, treat as optional placement
+        if 'default' in argSettings:
+            argSettings['nargs'] = '?'
+
     @staticmethod
     def __processOptionalArg(argSettings):
         # with choices

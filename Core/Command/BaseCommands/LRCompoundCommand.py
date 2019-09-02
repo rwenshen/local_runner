@@ -14,6 +14,7 @@ class LRCompoundCommand(LRCommand):
         self.__mySubCmds = {}
         self.__mySubArgs = {}
         super().__init__()
+
         if len(self.__mySubCmds) == 0:
             self.logInfo(f'Empty sub commond list.')
 
@@ -53,8 +54,7 @@ class LRCompoundCommand(LRCommand):
 
     def iterArgs(self):
         yield from super().iterArgs()
-        for arg in self.__mySubArgs.values():
-            yield arg
+        yield from self.__mySubArgs.values()
             
     def __verifyCmd(self, subCmdAlias:str):
         assert subCmdAlias in self.__mySubCmds
