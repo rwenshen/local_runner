@@ -7,27 +7,30 @@ from ... import *
 from ..LRCommand import LRCommand, LRCArg
 from ...LREnvironments import LREnvironments
 
+
 class silentArg(LRCArg):
     '''Enable silent mode for LRShellCommand.'''
     @LRCArg.argType(bool)
     @LRCArg.argShortName('s')
     def initialize(self):
-        pass 
+        pass
+
 
 class LRShellCommand(LRCommand):
 
     def getLogger(self):
         return LRCore.LRLogger.sGetLogger('command.shell')
-    def log(self, func, msg:str, *args, **kwargs):
+
+    def log(self, func, msg: str, *args, **kwargs):
         func(msg, *args, **kwargs)
-        indentent = '\t'
-        func(f'{indentent}in shell command {self.__class__} with shell "{self.__shell}".')
+        indent = '\t'
+        func(f'{indent}in shell command {self.__class__} with shell "{self.__shell}".')
 
     def __init__(self):
-        super().__init__()
-        
         self.__shell = LREnvironments.sSingleton.SHELL
         self.__currentIn = None
+        self.__cwd = '.'
+        super().__init__()
 
     @LRCommand.addArg('silent')
     def initialize(self):
@@ -52,42 +55,48 @@ class LRShellCommand(LRCommand):
         p.stderr.close()
 
     def execute(self, args):
-        
+
         p = subprocess.Popen(shlex.split(self.__shell),
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        cwd=self.myCwd)
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE,
+                             cwd=self.__cwd)
 
         if not args.silent:
             tStrout = threading.Thread(
-                            target=LRShellCommand.__processStdout,
-                            args=[p, LRCore.LRLogger.sGetLogger('shell')],
-                            name='Executing '+self.myName)
+                target=LRShellCommand.__processStdout,
+                args=[p, LRCore.LRLogger.sGetLogger('shell')],
+                name='Executing '+self.myName)
             tStrout.daemon = True
             tStrout.start()
             tStrerr = threading.Thread(
-                            target=LRShellCommand.__processStderr,
-                            args=[p, LRCore.LRLogger.sGetLogger('shell')],
-                            name='Executing '+self.myName)
+                target=LRShellCommand.__processStderr,
+                args=[p, LRCore.LRLogger.sGetLogger('shell')],
+                name='Executing '+self.myName)
             tStrerr.daemon = True
             tStrerr.start()
-        
+
         self.__currentIn = p.stdin
         self.doInput(args)
         p.stdin.close()
-        
+
         p.wait()
         return p.returncode
 
-    def input(self, input:str):
+    def input(self, input: str):
         assert self.__currentIn is not None
         toWrite = input + os.linesep
-        self.__currentIn.write(bytes(toWrite, encoding=locale.getpreferredencoding()))
+        self.__currentIn.write(
+            bytes(toWrite, encoding=locale.getpreferredencoding()))
         self.__currentIn.flush()
 
     @property
-    def myCwd(self):
-        return '.'
+    def cwd(self):
+        return self.__cwd
+
+    @cwd.setter
+    def cwd(self, value: str):
+        self.__cwd = value
+
     def doInput(self, args):
         self.logInfo(f'Nothing was input.')

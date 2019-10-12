@@ -9,8 +9,8 @@ class LRCommandLogger(LRCore.LRLogger):
         
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
-        indentent = '\t'
-        func(f'{indentent}in command {self.__class__}.')
+        indent = '\t'
+        func(f'{indent}in command {self.__class__}.')
 
 class LRCommandMetaClass(LRObjectMetaClass):
     baseClassName = 'LRCommand'
@@ -31,11 +31,12 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     def __init__(self):
         self.__myArgs = []
         self.__myCategories = []
-        self.initialize()
-        # if initialize is overridden, call super class version also.
-        cl = self.__class__
-        if cl != LRCommand and cl.initialize != cl.__mro__[1].initialize:
-            super(cl, self).initialize()
+        # call initialize from base classes
+        called = []
+        for cl in reversed(self.__class__.__mro__):
+            if issubclass(cl, LRCommand) and cl.initialize not in called:
+                cl.initialize(self)
+                called.append(cl.initialize)
 
         cat = ''
         if len(self.myCategories) > 0:
