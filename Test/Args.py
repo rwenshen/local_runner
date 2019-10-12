@@ -1,4 +1,4 @@
-from ..Core.Command import *
+from ..core.command import *
 from enum import Enum
 
 class TestEnum(Enum):

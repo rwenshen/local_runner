@@ -1,6 +1,7 @@
 from enum import Enum, unique
 
-from .LROFactory import LROFactory
+from .lr_obj_factory import LROFactory
+
 
 class LRObjectMetaClass(type):
 
@@ -19,10 +20,10 @@ class LRObjectMetaClass(type):
     def __new__(cls, name, bases, attrs):
         return cls.newImpl(name, (*bases, *cls.extraInterfaces), attrs)
 
+
 class LRObject(metaclass=LRObjectMetaClass):
     pass
-    
-    
+
     '''
 from .LRPropertyDefBase import LRPropertyDefBase
 

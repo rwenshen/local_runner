@@ -1,14 +1,14 @@
 from ... import *
-from ..LRCommand import LRCommand, LRCArg
+from ..lr_command import LRCommand, LRCArg
 
 class LRCompoundCommand(LRCommand):
 
     def getLogger(self):
-        return LRCore.LRLogger.sGetLogger('command.compound')
+        return LRLogger.sGetLogger('command.compound')
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
-        indentent = '\t'
-        func(f'{indentent}in compound command {self.__class__}.')
+        indent = '\t'
+        func(f'{indent}in compound command {self.__class__}.')
 
     def __init__(self):
         self.__mySubCmds = {}
@@ -68,9 +68,9 @@ class LRCompoundCommand(LRCommand):
             subArgs.__setattr__(predefinedArg, value)
         return subcmd.doExecution(subArgs)
     def __doSubCmdExecution(self, subCmds, args):
-        indentent = '\t'
+        indent = '\t'
         super().getLogger().info(f'Start execution of compound command {self.__class__}...')
-        super().getLogger().info(f'{indentent} to be executed commands: {subCmds}')
+        super().getLogger().info(f'{indent} to be executed commands: {subCmds}')
         for subCmdAlias in subCmds:
             returnCode = self.__executeSubCmd(subCmdAlias, args)
             if returnCode != 0:
@@ -112,11 +112,11 @@ class LRCompoundCommand(LRCommand):
 class LRSelectionCommand(LRCompoundCommand):
 
     def getLogger(self):
-        return LRCore.LRLogger.sGetLogger('command.compound.selection')
+        return LRLogger.sGetLogger('command.compound.selection')
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
-        indentent = '\t'
-        func(f'{indentent}in selection command {self.__class__}.')
+        indent = '\t'
+        func(f'{indent}in selection command {self.__class__}.')
 
     def getToBeExecuted(self, args):
         self.logError(f'Method "getToBeExecuted" is NOT implemented! Nothing will be executed.')

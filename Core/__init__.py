@@ -3,10 +3,10 @@ __all__ = [
     'LRObjectMetaClass',
     'LRObject',
     'LREnvironments',
-    'LRCore',
+    'LRLogger',
 ]
 
-from .LROFactory import LROFactory
-from .LRObject import LRObjectMetaClass, LRObject
-from .LREnvironments import LREnvironments
-from . import LRCore
+from .lr_obj_factory import LROFactory
+from .lr_object import LRObjectMetaClass, LRObject
+from .lr_environments import LREnvironments
+from .lr_core import LRLogger

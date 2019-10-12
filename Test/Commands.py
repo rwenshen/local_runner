@@ -1,4 +1,4 @@
-from ..Core.Command import *
+from ..core.command import *
 
 class test_shell(LRShellCommand):
     @LRCommand.addArg('Platform')

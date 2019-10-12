@@ -1,5 +1,5 @@
 from ..Core import *
-from ..Core.Command import *
+from ..core.command import *
 
 ############################################################
 # Core

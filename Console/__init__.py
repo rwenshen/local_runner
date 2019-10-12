@@ -1,5 +1,5 @@
 import sys
-from .LRCmd import LRCmd
+from .lr_console import LRCmd
 
 cmd = LRCmd()
 cmd.initialize()

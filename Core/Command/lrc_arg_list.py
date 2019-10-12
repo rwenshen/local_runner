@@ -1,16 +1,15 @@
 from .. import *
-from .LRCArg import LRCArg 
-from . import LRCommand 
+from .lrc_arg import LRCArg 
 
-class LRCArgList(LRCore.LRLogger):
+class LRCArgList(LRLogger):
 
     def getLogger(self):
-        return LRCore.LRLogger.sGetLogger('command.arg')
+        return LRLogger.sGetLogger('command.arg')
 
     def log(self, func, msg:str, *args, **kwargs):
         func(msg, *args, **kwargs)
-        indentent = '\t'
-        func(f'{indentent} in command {self.__myCmd.__class__}.')
+        LRLogger = '\t'
+        func(f'{LRLogger} in command {self.__myCmd.__class__}.')
 
     def __getattr__(self, name):
         if name in self.__myDict:
@@ -25,7 +24,7 @@ class LRCArgList(LRCore.LRLogger):
     def __contains__(self, key):
         return key in self.__myDict
 
-    def __init__(self, cmd:LRCommand):
+    def __init__(self, cmd):
         self.__myDict = {}
         self.__myCmd = cmd
         for arg in cmd.iterArgs():
@@ -46,7 +45,7 @@ class LRCArgList(LRCore.LRLogger):
             self.logCritical(f'Value "{value}" is NOT in choices list of argument "{name}"! Choices: {arg.myChoices}. The setting will be ignored.')
         self.__myDict[name] = value
 
-    def cloneFor(self, cmd:LRCommand):
+    def cloneFor(self, cmd):
         cloned = LRCArgList(cmd)
         cloned.__myDict.update(self.__myDict)
         return cloned

@@ -1,4 +1,4 @@
-from ..Core import *
+from ..core import *
 
 class Environments(LREnvironments):
 

@@ -1,6 +1,6 @@
-from ..Core import *
-from ..Core.Command import *
-from . import LRCmd
+from ..core import *
+from ..core.command import *
+from . import lr_console
 
 LRConsoleCommands = [
     'help',
@@ -20,7 +20,7 @@ class help(LRCommand):
         pass
 
     def execute(self, args):
-        LRCmd.LRCmd.printHelp(args.command)
+        lr_console.LRCmd.printHelp(args.command)
         return 0
 
 class show_env(LRCommand):

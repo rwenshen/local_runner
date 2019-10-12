@@ -4,8 +4,8 @@ import subprocess
 import shlex
 import threading
 from ... import *
-from ..LRCommand import LRCommand, LRCArg
-from ...LREnvironments import LREnvironments
+from ..lr_command import LRCommand, LRCArg
+from ...lr_environments import LREnvironments
 
 
 class silentArg(LRCArg):
@@ -19,7 +19,7 @@ class silentArg(LRCArg):
 class LRShellCommand(LRCommand):
 
     def getLogger(self):
-        return LRCore.LRLogger.sGetLogger('command.shell')
+        return LRLogger.sGetLogger('command.shell')
 
     def log(self, func, msg: str, *args, **kwargs):
         func(msg, *args, **kwargs)
@@ -65,13 +65,13 @@ class LRShellCommand(LRCommand):
         if not args.silent:
             tStrout = threading.Thread(
                 target=LRShellCommand.__processStdout,
-                args=[p, LRCore.LRLogger.sGetLogger('shell')],
+                args=[p, LRLogger.sGetLogger('shell')],
                 name='Executing '+self.myName)
             tStrout.daemon = True
             tStrout.start()
             tStrerr = threading.Thread(
                 target=LRShellCommand.__processStderr,
-                args=[p, LRCore.LRLogger.sGetLogger('shell')],
+                args=[p, LRLogger.sGetLogger('shell')],
                 name='Executing '+self.myName)
             tStrerr.daemon = True
             tStrerr.start()
