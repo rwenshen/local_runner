@@ -5,11 +5,13 @@ from ..core import *
 from ..core.command import *
 from . import lr_console_cmds
 
+
 class __shellCheck(LRShellCommand):
     pass
 
+
 class LRCmd:
-    
+
     def __init__(self):
         self.__collectCommandsInfo()
 
@@ -39,8 +41,10 @@ class LRCmd:
         )
 
         # commands
-        argParser.add_argument('cmd', choices=self.__myCmdNameList, help='The command to be excecuted.')
-        argParser.add_argument('cmd_args', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
+        argParser.add_argument(
+            'cmd', choices=self.__myCmdNameList, help='The command to be excecuted.')
+        argParser.add_argument(
+            'cmd_args', nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
         # final parsing
         self.__myArgs = argParser.parse_args()
@@ -48,9 +52,10 @@ class LRCmd:
     def run(self):
         cmd = LRCommand.sGetCmd(self.__myArgs.cmd)
         cmdParser = LRCmd.__parseCmdArgs(cmd)
-        args = self.__genArgList(cmd, cmdParser.parse_args(self.__myArgs.cmd_args))
+        args = self.__genArgList(
+            cmd, cmdParser.parse_args(self.__myArgs.cmd_args))
         return cmd.doExecution(args)
-    
+
     @staticmethod
     def printHelp(cmdName):
         cmd = LRCommand.sGetCmd(cmdName)
@@ -63,7 +68,7 @@ class LRCmd:
     ########## Arguments ##########
     @staticmethod
     def __parseCmdArgs(cmd):
-        
+
         cmdArgParser = argparse.ArgumentParser(
             description=cmd.myDescription,
             prog=cmd.myName,
@@ -71,13 +76,19 @@ class LRCmd:
             formatter_class=argparse.RawTextHelpFormatter
         )
 
+        remainder = None
         for arg in cmd.iterArgs():
+            if arg.myIsRemainder:
+                remainder = arg
+                continue
+
             if arg.myIsPlacement:
                 argNames = [arg.myName]
             elif arg.myShortName is not None:
                 argNames = ['-'+arg.myShortName, '--'+arg.myName]
             else:
                 argNames = ['-'+arg.myName]
+
             argSettings = {}
             argSettings['help'] = arg.myDescription
             argSettings['type'] = arg.myType
@@ -98,6 +109,13 @@ class LRCmd:
                 LRCmd.__processOptionalArg(argSettings)
             cmdArgParser.add_argument(*argNames, **argSettings)
 
+        # add remainder argument at last
+        if remainder is not None:
+            cmdArgParser.add_argument(
+                'remainder_temp_placement', choices=[arg.myName])
+            cmdArgParser.add_argument(
+                arg.myName, nargs=argparse.REMAINDER, help=arg.myDescription)
+
         return cmdArgParser
 
     @staticmethod
@@ -114,7 +132,7 @@ class LRCmd:
                 argSettings['action'] = 'store_const'
                 argSettings['default'] = argSettings['choices'][0]
                 del argSettings['choices']
-        
+
         # bool type
         if argSettings['type'] == bool:
             if 'default' in argSettings and argSettings['default']:
@@ -130,6 +148,8 @@ class LRCmd:
         argList = LRCArgList(cmd)
         for name, value in vars(args).items():
             arg = LRCArg.sGetArg(name)
+            if arg is None:
+                continue
             if issubclass(arg.myType, Enum) and value is not None:
                 value = arg.myType[value]
             argList.__setattr__(name, value)

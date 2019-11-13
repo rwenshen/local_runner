@@ -69,6 +69,7 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
         # default definition
         self.__type = str
         self.__isPlacement = False
+        self.__isRemainder = False
         self.__choices = None
         self.__default = None
         self.__shortName = None
@@ -101,6 +102,10 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
         return self.__isPlacement
 
     @property
+    def myIsRemainder(self):
+        return self.__isRemainder
+
+    @property
     def myShortName(self):
         return self.__shortName
 
@@ -122,6 +127,16 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
         def decorator(func):
             def wrapper(self):
                 self.__isPlacement = True
+                return func(self)
+            return wrapper
+        return decorator
+
+    @staticmethod
+    def argRemainder():
+        def decorator(func):
+            def wrapper(self):
+                self.__isRemainder = True
+                self.__type = list
                 return func(self)
             return wrapper
         return decorator
@@ -160,6 +175,11 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
         return decorator
 
     def __verify(self):
+        if self.myIsPlacement and self.myIsRemainder:
+            self.logError(
+                f'A remainder argument cannot be a placement argument! Placement is ignored')
+            self.__isPlacement = False
+
         if self.myDefault is not None and not isinstance(self.myDefault, self.myType):
             self.logError(
                 f'Default value "{self.myDefault}" is not in the type of "{self.myType}". None will be used as default value.')
