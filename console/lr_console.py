@@ -112,7 +112,7 @@ class LRCmd:
         # add remainder argument at last
         if remainder is not None:
             cmdArgParser.add_argument(
-                'remainder_temp_placement', choices=[arg.myName])
+                'remainder_temp_placement', choices=[arg.myName], nargs='?')
             cmdArgParser.add_argument(
                 arg.myName, nargs=argparse.REMAINDER, help=arg.myDescription)
 
