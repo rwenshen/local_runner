@@ -5,7 +5,7 @@ from ..lr_command import LRCommand, LRCArg
 class LRCompoundCommand(LRCommand):
 
     def getLogger(self):
-        return LRLogger.sGetLogger('command.compound')
+        return LRLogger.cGetLogger('command.compound')
 
     def log(self, func, msg: str, *args, **kwargs):
         func(msg, *args, **kwargs)
@@ -131,7 +131,7 @@ class LRCompoundCommand(LRCommand):
 class LRSelectionCommand(LRCompoundCommand):
 
     def getLogger(self):
-        return LRLogger.sGetLogger('command.compound.selection')
+        return LRLogger.cGetLogger('command.compound.selection')
 
     def log(self, func, msg: str, *args, **kwargs):
         func(msg, *args, **kwargs)

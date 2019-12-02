@@ -10,7 +10,7 @@ class LROFactory(LRLogger):
         self.__lroDict = {}
 
     def getLogger(self):
-        return LRLogger.sGetLogger('lro_factory.register')
+        return LRLogger.cGetLogger('lro_factory.register')
 
     def __register(self, lroClass, metaClass):
         baseTypeName = metaClass.baseClassName

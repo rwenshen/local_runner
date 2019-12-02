@@ -19,7 +19,7 @@ class silentArg(LRCArg):
 class LRShellCommand(LRCommand):
 
     def getLogger(self):
-        return LRLogger.sGetLogger('command.shell')
+        return LRLogger.cGetLogger('command.shell')
 
     def log(self, func, msg: str, *args, **kwargs):
         func(msg, *args, **kwargs)
@@ -65,13 +65,13 @@ class LRShellCommand(LRCommand):
         if not args.silent:
             tStrout = threading.Thread(
                 target=LRShellCommand.__processStdout,
-                args=[p, LRLogger.sGetLogger('shell')],
+                args=[p, LRLogger.cGetLogger('shell')],
                 name='Executing '+self.myName)
             tStrout.daemon = True
             tStrout.start()
             tStrerr = threading.Thread(
                 target=LRShellCommand.__processStderr,
-                args=[p, LRLogger.sGetLogger('shell')],
+                args=[p, LRLogger.cGetLogger('shell')],
                 name='Executing '+self.myName)
             tStrerr.daemon = True
             tStrerr.start()

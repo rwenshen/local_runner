@@ -3,7 +3,7 @@ from .. import *
 
 class LRCArgLogger(LRLogger):
     def getLogger(self):
-        return LRLogger.sGetLogger('command.arg')
+        return LRLogger.cGetLogger('command.arg')
 
     def log(self, func, msg: str, *args, **kwargs):
         func(msg, *args, **kwargs)
