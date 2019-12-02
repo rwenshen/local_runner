@@ -6,7 +6,7 @@ from . import base_commands
 
 class LRCommandLogger(LRLogger):
     def getLogger(self):
-        return LRLogger.sGetLogger('command')
+        return LRLogger.cGetLogger('command')
 
     def log(self, func, msg: str, *args, **kwargs):
         func(msg, *args, **kwargs)

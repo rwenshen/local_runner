@@ -2,13 +2,14 @@ import logging
 
 
 class LRLogger:
-    
+    '''Common logger base.'''
+
     @classmethod
     def cGetLogger(cls, name: str = ''):
         return logging.getLogger(f'lr.core.{name}')
 
     @classmethod
-    def cLog(cls, func, msg:str, *args, **kwargs):
+    def cLog(cls, func, msg: str, *args, **kwargs):
         func(msg, *args, **kwargs)
 
     @classmethod
@@ -35,7 +36,6 @@ class LRLogger:
     def cLogCritical(cls, msg: str, *args, **kwargs):
         func = cls.cGetLogger().critical
         cls.cLog(func, msg, *args, **kwargs)
-
 
     def getLogger(self):
         return self.__class__.cGetLogger('un-grouped')

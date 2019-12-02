@@ -117,7 +117,7 @@ class LRCompoundCommand(LRCommand):
                     self.__myToBeExecutedCmds = None
             except:
                 self.logError(
-                    f'To be executed "{toBeExecuted}" is not a str or iterable senquence! Exuction was skipped.')
+                    f'To be executed "{toBeExecuted}" is not a str or iterable sequence! Execution was skipped.')
                 self.__myToBeExecutedCmds = None
             finally:
                 pass
