@@ -21,7 +21,6 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         'SHELL': LREnvInfo('Unknown, please set environment "PROJ_DESC".', '__lr'),
     }
 
-    sSingleton = None
     @staticmethod
     def sAddDefaultEnv(category: str, **args):
         for env, value in args.items():
@@ -44,7 +43,6 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         raise AttributeError("Environment '%s' is not existent." % (name))
 
     def __init__(self):
-        LREnvironments.sSingleton = self
         self.initialize()
 
     def setEnv(**args):

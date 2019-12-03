@@ -5,7 +5,6 @@ import shlex
 import threading
 from ... import *
 from ..lr_command import LRCommand, LRCArg
-from ...lr_environments import LREnvironments
 
 
 class silentArg(LRCArg):
@@ -27,7 +26,7 @@ class LRShellCommand(LRCommand):
         func(f'{indent}in shell command {self.__class__} with shell "{self.__shell}".')
 
     def __init__(self):
-        self.__shell = LREnvironments.sSingleton.SHELL
+        self.__shell = LROFactory.LREnvironments.SHELL
         self.__currentIn = None
         self.__cwd = '.'
         super().__init__()

@@ -4,6 +4,8 @@ from .lr_obj_factory import LROFactory
 
 
 class LRObjectMetaClass(type):
+    '''Base meta class for LRObject.'''
+
 
     @classmethod
     def newImpl(cls, name, bases, attrs):
