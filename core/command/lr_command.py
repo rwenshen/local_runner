@@ -45,6 +45,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
 
     def __init__(self):
         self.__myArgs = []
+        self.__myDynamicArgs = {}
         self.__myCategories = []
         # call initialize from base classes
         called = []
@@ -78,7 +79,10 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
 
     def iterArgs(self):
         for argName in self.__myArgs:
-            yield LRCArg.sGetArg(argName)
+            if argName in self.__myDynamicArgs:
+                yield self.__myDynamicArgs[argName]
+            else:
+                yield LRCArg.sGetArg(argName)
 
     def containArg(self, argName: str):
         return argName in self.__myArgs
@@ -95,6 +99,36 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
                         f'Argument "{argName}" is duplicated! Skipped the second one.')
                 else:
                     self.__myArgs.append(argName)
+                return func(self)
+            return wrapper
+        return decorator
+
+    @staticmethod
+    def addArgDirectly(
+            argName: str,
+            description: str,
+            argType: type=str,
+            isPlacement: bool=False,
+            choice = None,
+            default = None,
+            shortName = None):
+        def decorator(func):
+            def wrapper(self):
+                if argName in self.__myArgs:
+                    self.logWarning(
+                        f'Argument "{argName}" is duplicated! Skipped the second one.')
+                else:
+                    dynamicArg = LRCArg.sCreateDynamicArg(
+                        argName,
+                        description=description,
+                        argType=argType,
+                        isPlacement=isPlacement,
+                        choice=choice,
+                        default=default,
+                        shortName=shortName)
+                    if dynamicArg is not None:
+                        self.__myDynamicArgs[argName] = dynamicArg
+                        self.__myArgs.append(argName)
                 return func(self)
             return wrapper
         return decorator
