@@ -20,6 +20,8 @@ class LRCArgMetaClass(LRObjectMetaClass):
 class LRCArg(LRObject, metaclass=LRCArgMetaClass):
 
     __surfix = 'Arg'
+    __remainderCount = 0
+
 
     @staticmethod
     def sDoesArgExist(argName: str):
@@ -35,6 +37,33 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
         if not LROFactory.sContain(LRCArg.__name__, name):
             name = name + LRCArg.__surfix
         return LROFactory.sFind(LRCArg.__name__, name)
+
+    @staticmethod
+    def sCreateDynamicArg(
+            argName: str,
+            description: str='',
+            argType: type=str,
+            isPlacement: bool=False,
+            choice = None,
+            default = None,
+            shortName = None):
+
+        if LRCArg.sDoesArgExist(argName):
+            self.getLogger().error(
+                f'Argument {argName} exists, cannot be used to create dynamic arg.')
+            return None
+
+        arg = LRCArg()
+        arg.__name = argName
+        arg.__description = description
+        arg.__type = argType
+        arg.__isPlacement = isPlacement
+        arg.__choices = choice
+        arg.__default = default
+        arg.__shortName = shortName
+        arg.__isDynamic = True
+
+        return arg
 
     def __init__(self):
         # get name from class name
@@ -73,6 +102,8 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
         self.__choices = None
         self.__default = None
         self.__shortName = None
+        # for dynamic arg
+        self.__isDynamic = False
 
         self.initialize()
         self.__verify()
@@ -109,6 +140,10 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
     def myShortName(self):
         return self.__shortName
 
+    @property
+    def myIsDynamic(self):
+        return self.__isDynamic
+
     @staticmethod
     def argType(argType: type):
         def decorator(func):
@@ -135,8 +170,13 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
     def argRemainder():
         def decorator(func):
             def wrapper(self):
-                self.__isRemainder = True
-                self.__type = list
+                if LRCArg.__remainderCount == 0:
+                    self.__isRemainder = True
+                    self.__type = list
+                    LRCArg.__remainderCount += 1
+                else:
+                    self.logError(
+                        f"argRemainder is for internal usage!")
                 return func(self)
             return wrapper
         return decorator
@@ -205,3 +245,10 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
     def initialize(self):
         self.logInfo(
             f'Initialize is not defined, will be used as optional text argument.')
+
+
+class remainderArg(LRCArg):
+    @LRCArg.argRemainder()
+    def initialize(self):
+        pass
+    

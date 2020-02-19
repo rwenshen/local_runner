@@ -49,11 +49,7 @@ class LRCmd:
         self.__myArgs = argParser.parse_args()
 
     def run(self):
-        cmd = LRCommand.sGetCmd(self.__myArgs.cmd)
-        argList = self.__myArgs._cmd_args
-        args = LRCArgParser.parse(cmd, argList)
-
-        return cmd.doExecution(args)
+        return LRCommand.sCallCmd(self.__myArgs.cmd, self.__myArgs._cmd_args)
 
     @staticmethod
     def printHelp(cmdName):
@@ -61,5 +57,4 @@ class LRCmd:
         if cmd is None:
             pass
         else:
-            cmdParser = LRCmd.__parseCmdArgs(cmd)
-            cmdParser.print_help()
+            LRCArgParser.printHelp(cmd)

@@ -7,11 +7,14 @@ LRConsoleCommands = [
     'show_env',
 ]
 
+
 class commandArg(LRCArg):
     '''The command for help.'''
     @LRCArg.argPlacement()
     def initialize(self):
         pass
+
+
 class help(LRCommand):
     '''Give the help information of the specific command.'''
     @LRCommand.addArg('commandArg')
@@ -22,6 +25,7 @@ class help(LRCommand):
     def execute(self, args):
         lr_console.LRCmd.printHelp(args.command)
         return 0
+
 
 class show_env(LRCommand):
     '''Show the environments of current project.'''

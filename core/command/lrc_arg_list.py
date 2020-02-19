@@ -30,8 +30,10 @@ class LRCArgList(LRLogger):
 
     def __init__(self, cmd):
         self.__myDict = {}
+        self.__myArgs = {}
         self.__myCmd = cmd
         for arg in cmd.iterArgs():
+            self.__myArgs[arg.myName] = arg
             self.__myDict[arg.myName] = arg.myDefault
 
     def __setArg(self, name, value):
@@ -41,7 +43,7 @@ class LRCArgList(LRLogger):
                 f'Argument "{name}" is NOT existent! The setting will be ignored.')
             return
         # get arg
-        arg = LRCArg.sGetArg(name)
+        arg = self.getLrcArg(name)
         # check type
         if value is not None and not isinstance(value, arg.myType):
             self.logCritical(
@@ -51,6 +53,9 @@ class LRCArgList(LRLogger):
             self.logCritical(
                 f'Value "{value}" is NOT in choices list of argument "{name}"! Choices: {arg.myChoices}. The setting will be ignored.')
         self.__myDict[name] = value
+
+    def getLrcArg(self, name: str):
+        return self.__myArgs.get(name, None)
 
     def cloneFor(self, cmd):
         cloned = LRCArgList(cmd)

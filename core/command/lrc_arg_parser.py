@@ -17,6 +17,11 @@ class LRCArgParser:
         return args
 
     @staticmethod
+    def printHelp(cmd):
+        cmdParser = LRCArgParser.__getParser(cmd)
+        cmdParser.print_help()
+
+    @staticmethod
     def __getParser(cmd):
 
         cmdArgParser = argparse.ArgumentParser(
@@ -63,9 +68,7 @@ class LRCArgParser:
         # add remainder argument at last
         if remainder is not None:
             cmdArgParser.add_argument(
-                'remainder_temp_placement', choices=[arg.myName], nargs='?')
-            cmdArgParser.add_argument(
-                arg.myName, nargs=argparse.REMAINDER, help=arg.myDescription)
+                arg.myName, nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
 
         return cmdArgParser
 
@@ -98,9 +101,10 @@ class LRCArgParser:
     def __genArgList(cmd, args):
         argList = LRCArgList(cmd)
         for name, value in vars(args).items():
-            arg = LRCArg.sGetArg(name)
+            arg = argList.getLrcArg(name)
             if arg is None:
                 continue
+                        
             if issubclass(arg.myType, Enum) and value is not None:
                 value = arg.myType[value]
             argList.__setattr__(name, value)

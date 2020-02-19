@@ -1,6 +1,7 @@
 from .. import *
 from .lrc_arg import LRCArg
 from .lrc_arg_list import LRCArgList
+from .lrc_arg_parser import LRCArgParser
 from . import base_commands
 
 
@@ -30,6 +31,17 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
     @staticmethod
     def sGetCmd(cmdName: str):
         return LROFactory.sFind(LRCommand.__name__, cmdName)
+
+    @staticmethod
+    def sParseCmdArgs(cmdName: str, argList: list):
+        cmd = LRCommand.sGetCmd(cmdName)
+        return LRCArgParser.parse(cmd, argList)
+
+    @staticmethod
+    def sCallCmd(cmdName: str, argList: list):
+        args = LRCommand.sParseCmdArgs(cmdName, argList)
+        cmd = LRCommand.sGetCmd(cmdName)
+        return cmd.doExecution(args)
 
     def __init__(self):
         self.__myArgs = []
