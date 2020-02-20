@@ -48,11 +48,6 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
             default = None,
             shortName = None):
 
-        if LRCArg.sDoesArgExist(argName):
-            self.getLogger().error(
-                f'Argument {argName} exists, cannot be used to create dynamic arg.')
-            return None
-
         arg = LRCArg()
         arg.__name = argName
         arg.__description = description
