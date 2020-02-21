@@ -74,12 +74,12 @@ class errorUsingArgCmd(LRCommand):
 
 # for compound cmd
 class errorCompoundCmd(LRCompoundCommand):
-    @LRCompoundCommand.addSubCmd('sub1', 'test_enum', Platform='x1')
-    @LRCompoundCommand.addSubCmd('sub1', 'nonArgCmd')
-    @LRCompoundCommand.addSubCmd('error1', 'nonex')
-    @LRCompoundCommand.addSubCmd('error2', 'test_enum', nonArg=1)
-    @LRCompoundCommand.addSubCmd('error3', 'test_shell', Platform=1)
-    @LRCompoundCommand.addSubCmd('error4', 'test_shell', Platform='Error')
+    @LRCompoundCommand.addSubCmd('sub1', cmdName='test_enum', Platform='x1')
+    @LRCompoundCommand.addSubCmd('sub1', cmdName='nonArgCmd')
+    @LRCompoundCommand.addSubCmd('error1', cmdName='nonex')
+    @LRCompoundCommand.addSubCmd('error2', cmdName='test_enum', nonArg=1)
+    @LRCompoundCommand.addSubCmd('error3', cmdName='test_shell', Platform=1)
+    @LRCompoundCommand.addSubCmd('error4', cmdName='test_shell', Platform='Error')
     def initialize(self):
         pass
 
@@ -87,6 +87,6 @@ class emptyCompoundCmd(LRCompoundCommand):
     pass
 
 class errorSelectionCmd(LRSelectionCommand):
-    @LRCompoundCommand.addSubCmd('sub1', 'test_enum')
+    @LRCompoundCommand.addSubCmd('sub1', cmdName='test_enum')
     def initialize(self):
         pass

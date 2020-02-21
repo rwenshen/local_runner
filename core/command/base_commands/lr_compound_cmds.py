@@ -238,7 +238,7 @@ class LRSelectionCommand(LRCompoundCommand):
     def getToBeExecuted(self, args):
         return args.subcmd
 
-    def executeNormalSubCmd(self, cmdInfo, args):
+    def executeDefinedSubCmd(self, cmdInfo, args):
         cmdName = cmdInfo[0]
         subcmd = LRCommand.sGetCmd(cmdName)
         subArgs = LRCommand.sParseCmdArgs(cmdName, args.remainder)
