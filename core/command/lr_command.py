@@ -43,13 +43,6 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         cmd = LRCommand.sGetCmd(cmdName)
         return cmd.doExecution(args)
 
-    @staticmethod
-    def sPrintHelp(cmdName: str, subcmdName: str):
-        cmd = LRCommand.sGetCmd(cmdName)
-        if cmd is None:
-            pass
-        cmd.printHelp(subcmdName)
-
     def __init__(self):
         self.__myArgs = []
         self.__myDynamicArgs = {}

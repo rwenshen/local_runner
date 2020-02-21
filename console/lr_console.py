@@ -16,10 +16,10 @@ class LRCmd:
 
     def __collectCommandsInfo(self):
         self.__myCmdNameList = []
-        self.__myCmdNameList += lr_console_cmds.LRConsoleCommands
         for lrc in LRCommand.sGetCmdList():
             cmdName = lrc.__class__.__name__
-            if not cmdName.startswith('__') and cmdName not in lr_console_cmds.LRConsoleCommands:
+            if not cmdName.startswith('__') \
+                    and cmdName != 'LRNullCommand':
                 self.__myCmdNameList.append(cmdName)
 
     def initialize(self):

@@ -13,7 +13,8 @@ class help(LRCommand):
     @LRCommand.addArgDirectly(
         'command',
         'The command for help.',
-        isPlacement=True)
+        isPlacement=True,
+        default='')
     @LRCommand.addArgDirectly(
         'subcmd',
         'The subcmd of command (if the command is a selection command) for help.',
@@ -23,7 +24,26 @@ class help(LRCommand):
         pass
 
     def execute(self, args):
-        LRCommand.sPrintHelp(args.command, args.subcmd)
+        if len(args.command) == 0:
+            print('Command list:')
+            print('')
+            cmdList = []
+            for cmd in LRCommand.sGetCmdList():
+                cmdName = cmd.myName
+                if cmdName.startswith('__') \
+                        or cmdName == 'LRNullCommand':
+                    continue
+
+                if len(cmd.myCategories) > 0:
+                    cmdName = f'{"/".join(cmd.myCategories)}/{cmdName}'
+                cmdList.append('\t' + cmdName)
+            cmdList.sort()
+            print(*cmdList, sep = '\n') 
+        else:
+            cmd = LRCommand.sGetCmd(args.command)
+            if cmd is None:
+                pass
+            cmd.printHelp(args.subcmd)
         return 0
 
 
