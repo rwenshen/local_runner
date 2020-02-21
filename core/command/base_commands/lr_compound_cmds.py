@@ -22,7 +22,11 @@ class LRCompoundCommand(LRCommand):
             self.logInfo(f'Empty sub command list.')
 
     @staticmethod
-    def addSubCmd(subCmdAlias: str, cmdName: str = '', **args):
+    def addSubCmd(subCmdAlias: str,
+            callableHelp: str=None, # for callable command, help text
+            cmdName: str=None,      # for defined command, defined cmd name
+            **args                  # for defined command, default arguments
+        ):
         def decorator(func):
             def wrapper(self):
                 # verify subcmd name
@@ -31,12 +35,16 @@ class LRCompoundCommand(LRCommand):
                         f'Sub command "{subCmdAlias}" has been added! Just skip.')
                     return func(self)
 
-                # for callable cmd
+                # for callable command
                     # call member function call_subCmdAlias
-                if len(cmdName) == 0:
-                    self.__mySubCmds[subCmdAlias] = None
+                if cmdName is None:
+                    helpText = 'Call function '\
+                            f'{self.__class__.__name__}.call_{subCmdAlias}().'
+                    if callableHelp is not None:
+                        helpText += f'\n{callableHelp}'
+                    self.__mySubCmds[subCmdAlias] = helpText
                     self.__myHasCallableCmd = True
-                # for normal cmd
+                # for defined command
                 else:
                     # verify cmd
                     cmd = LRCommand.sGetCmd(cmdName)
@@ -79,6 +87,9 @@ class LRCompoundCommand(LRCommand):
     def subCmds(self):
         return self.__mySubCmds.keys()
 
+    def getSubCmdInfo(self, subCmdAlias: str):
+        return self.__mySubCmds[subCmdAlias]
+
     def verifyCmd(self, subCmdAlias: str):
         assert subCmdAlias in self.__mySubCmds
 
@@ -100,26 +111,26 @@ class LRCompoundCommand(LRCommand):
 
     def __executeSubCmd(self, subCmdAlias: str, args):
         self.verifyCmd(subCmdAlias)
-        cmdInfo = self.__mySubCmds[subCmdAlias]
+        cmdInfo = self.getSubCmdInfo(subCmdAlias)
 
-        # member function cmd
-        if cmdInfo == None:
+        # callable command
+        if isinstance(cmdInfo, str):
             return self.executeCallableSubCmd(subCmdAlias, args)
-        # normal cmd
+        # defined command
         else:
-            return self.executeNormalSubCmd(cmdInfo, args)
+            return self.executeDefinedSubCmd(cmdInfo, args)
 
     def execute(self, args) -> int:
         raise NotImplementedError
 
     def getToBeExecuted(self, args):
-        return self.__mySubCmds.keys()
+        return self.subCmds
 
     def executeCallableSubCmd(self, subCmdAlias: str, args):
         toCall = getattr(self, f'call_{subCmdAlias}')
         return toCall(args, args.remainder)
 
-    def executeNormalSubCmd(self, cmdInfo, args):
+    def executeDefinedSubCmd(self, cmdInfo, args):
         cmdName = cmdInfo[0]
         subcmd = LRCommand.sGetCmd(cmdName)
         subArgs = args.cloneFor(subcmd)
@@ -159,12 +170,54 @@ class LRSelectionCommand(LRCompoundCommand):
     def __init__(self):
         super().__init__()
 
+        # add the argument subcmd
         self.__subCmdArg = LRCArg.sCreateDynamicArg(
             'subcmd',
-            description=f'Sub-commands of selection command {self.__class__}.',
+            description=f'Sub-commands of selection command "{self.myName}".',
             isPlacement=True,
             choice=self.subCmds
         )
+
+        # Update description, add help text from subcmds
+        self.appendLindToDescription('')
+        indent = '\t'
+        self.appendLindToDescription(f'{indent}Sub-commands:')
+        self.appendLindToDescription('')
+
+        indent += '  '
+            # calculate description start position
+        maxDescritionLen = 0
+        for subcmd in self.subCmds:
+            l = len(subcmd)
+            if l > maxDescritionLen:
+                maxDescritionLen = l
+
+        for subcmd in self.subCmds:
+            description = f'{indent}{subcmd}:  '
+            description += ' ' * (maxDescritionLen - len(subcmd))
+            desStart = maxDescritionLen + 3 # for colon and two spaces
+            cmdInfo = self.getSubCmdInfo(subcmd)
+            # for callable command
+            if isinstance(cmdInfo, str):
+                helps = cmdInfo.split('\n')
+                description += helps[0]
+                self.appendLindToDescription(description)
+                for index in range(1, len(helps)):
+                    description = indent
+                    description += ' ' * desStart
+                    description += helps[index]
+                    self.appendLindToDescription(description)
+            # for defined command
+            else:
+                description += f'Execute command "{cmdInfo[0]}".'
+                self.appendLindToDescription(description)
+                description = indent
+                description += ' ' * desStart                
+                description += f'Use "help {self.myName} -sub {subcmd}" to get'\
+                    ' detail help.'
+                self.appendLindToDescription(description)
+
+            self.appendLindToDescription('')
         
     def getLogger(self):
         return LRLogger.cGetLogger('command.compound.selection')
@@ -192,3 +245,21 @@ class LRSelectionCommand(LRCompoundCommand):
         for predefinedArg, value in cmdInfo[1].items():
             subArgs.__setattr__(predefinedArg, value)
         return subcmd.doExecution(subArgs)
+
+    def printHelp(self, *args):
+        # print subcmd help
+        if len(args) == 1 and args[0] in self.subCmds:
+            cmdInfo = self.getSubCmdInfo(args[0])
+            print(f'Command "{self.myName}", sub-command "{args[0]}":')
+            print()
+            # for callable command
+            if isinstance(cmdInfo, str):
+                indent = '\t'
+                for line in cmdInfo.split('\n'):
+                    print(f'{indent}{line}')
+            # for defined command
+            else:
+                LRCommand.sPrintHelp(cmdInfo[0], None)
+        # print self help
+        else:
+            super().printHelp()

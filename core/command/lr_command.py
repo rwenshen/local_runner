@@ -43,6 +43,13 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         cmd = LRCommand.sGetCmd(cmdName)
         return cmd.doExecution(args)
 
+    @staticmethod
+    def sPrintHelp(cmdName: str, subcmdName: str):
+        cmd = LRCommand.sGetCmd(cmdName)
+        if cmd is None:
+            pass
+        cmd.printHelp(subcmdName)
+
     def __init__(self):
         self.__myArgs = []
         self.__myDynamicArgs = {}
@@ -64,6 +71,10 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
         if self.__doc__ is not None:
             self.__myDescription += '\n\t'
             self.__myDescription += self.__doc__
+
+    def appendLindToDescription(self, line: str):
+        self.__myDescription += line
+        self.__myDescription += '\n'
 
     @property
     def myName(self):
@@ -169,3 +180,6 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
 
     def postExecute(self, args: LRCArgList, returnCode: int):
         pass
+
+    def printHelp(self, *args):
+        LRCArgParser.printHelp(self)

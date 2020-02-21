@@ -50,11 +50,3 @@ class LRCmd:
 
     def run(self):
         return LRCommand.sCallCmd(self.__myArgs.cmd, self.__myArgs._cmd_args)
-
-    @staticmethod
-    def printHelp(cmdName):
-        cmd = LRCommand.sGetCmd(cmdName)
-        if cmd is None:
-            pass
-        else:
-            LRCArgParser.printHelp(cmd)

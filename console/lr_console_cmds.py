@@ -8,22 +8,22 @@ LRConsoleCommands = [
 ]
 
 
-class commandArg(LRCArg):
-    '''The command for help.'''
-    @LRCArg.argPlacement()
-    def initialize(self):
-        pass
-
-
 class help(LRCommand):
     '''Give the help information of the specific command.'''
-    @LRCommand.addArg('commandArg')
+    @LRCommand.addArgDirectly(
+        'command',
+        'The command for help.',
+        isPlacement=True)
+    @LRCommand.addArgDirectly(
+        'subcmd',
+        'The subcmd of command (if the command is a selection command) for help.',
+        shortName='sub')
     @LRCommand.setCategory('__console')
     def initialize(self):
         pass
 
     def execute(self, args):
-        lr_console.LRCmd.printHelp(args.command)
+        LRCommand.sPrintHelp(args.command, args.subcmd)
         return 0
 
 
