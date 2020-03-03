@@ -97,7 +97,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
             def wrapper(self):
                 if not LRCArg.sDoesArgExist(argName):
                     self.logError(
-                        f'Argument "{argName}" is not registered! Skipped.')
+                        f'Argument "{argName}" has been registered! Skipped.')
                 elif argName in self.__myArgs:
                     self.logWarning(
                         f'Argument "{argName}" is duplicated! Skipped the second one.')

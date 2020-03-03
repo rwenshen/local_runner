@@ -26,10 +26,15 @@ class LRShellCommand(LRCommand):
         func(f'{indent}in shell command {self.__class__} with shell "{self.__shell}".')
 
     def __init__(self):
-        self.__shell = LROFactory.LREnvironments.SHELL
         self.__currentIn = None
         self.__cwd = '.'
         super().__init__()
+
+    @property
+    def __shell(self):
+        if isinstance(LROFactory.LREnvironments, list):
+            return 'UNINITIALIZED'
+        return LROFactory.LREnvironments.SHELL
 
     @LRCommand.addArg('silent')
     def initialize(self):
