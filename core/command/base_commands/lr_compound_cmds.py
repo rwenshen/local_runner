@@ -39,7 +39,8 @@ class LRCompoundCommand(LRCommand):
                     # call member function call_subCmdAlias
                 if cmdName is None:
                     helpText = 'Call function '\
-                            f'{self.__class__.__name__}.call_{subCmdAlias}().'
+                            f'{self.__class__.__name__}.call_{subCmdAlias}'\
+                            '(args, argList).'
                     if callableHelp is not None:
                         helpText += f'\n{callableHelp}'
                     self.__mySubCmds[subCmdAlias] = helpText
@@ -50,22 +51,29 @@ class LRCompoundCommand(LRCommand):
                     cmd = LRCommand.sGetCmd(cmdName)
                     if cmd is None:
                         self.logError(
-                            f'Command "{cmdName}" for sub command "{subCmdAlias}" is NOT registered! Just skip.')
+                            f'Command "{cmdName}" for sub command'
+                            f' "{subCmdAlias}" is NOT registered! Just skip.')
                         return func(self)
                     # verify arguments
                     cmdArgNames = [arg.myName for arg in cmd.iterArgs()]
                     for argName, value in args.items():
                         if argName not in cmdArgNames:
                             self.logWarning(
-                                f'Argument "{argName}"" is NOT in Command "{cmdName}" for sub command "{subCmdAlias}"!')
+                                f'Argument "{argName}"" is NOT in Command'
+                                f' "{cmdName}" for sub command "{subCmdAlias}"!')
                         else:
                             arg = LRCArg.sGetArg(argName)
                             if not isinstance(value, arg.myType):
                                 self.logWarning(
-                                    f'"{value}" is NOT the type of argument "{argName}"" in Command "{cmdName}" for sub command "{subCmdAlias}"!')
-                            elif arg.myChoices is not None and value not in arg.myChoices:
+                                    f'"{value}" is NOT the type of argument'
+                                    f' "{argName}"" in Command "{cmdName}"'
+                                    f' for sub command "{subCmdAlias}"!')
+                            elif arg.myChoices is not None \
+                                    and value not in arg.myChoices:
                                 self.logWarning(
-                                    f'"{value}" is NOT in the choice list of argument "{argName}"" in Command "{cmdName}" for sub command "{subCmdAlias}"!')
+                                    f'"{value}" is NOT in the choice list of'
+                                    f' argument "{argName}"" in Command'
+                                    f' "{cmdName}" for sub command "{subCmdAlias}"!')
 
                     # add the subcmd
                     self.__mySubCmds[subCmdAlias] = (cmdName, args)
@@ -167,15 +175,44 @@ class LRCompoundCommand(LRCommand):
 
 class LRSelectionCommand(LRCompoundCommand):
 
+    # Not supported for now
+    #@staticmethod
+    #def setDefaultSubCmd(subCmdAlias: str):
+    #    def decorator(func):
+    #        def wrapper(self):
+    #            if self.__myDefaultCmd is not None:
+    #                self.logWarning(
+    #                    f'"{self.__myDefaultCmd}" has been set as default, '
+    #                    f'"{subCmdAlias}" is skipped to be set as default.')
+    #            else:
+    #                self.__myDefaultCmd = subCmdAlias
+
+    #            return func(self)
+    #        return wrapper
+    #    return decorator
+
     def __init__(self):
+        self.__myDefaultCmd = None
         super().__init__()
 
         # add the argument subcmd
-        self.__subCmdArg = LRCArg.sCreateDynamicArg(
-            'subcmd',
+        argSettings = {}
+        argSettings.update(
             description=f'Sub-commands of selection command "{self.myName}".',
             isPlacement=True,
             choice=self.subCmds
+        )
+
+        # Not supported for now
+        #if self.__myDefaultCmd is not None:
+        #    argSettings.update(
+        #        default=self.__myDefaultCmd,
+        #        nargs='?'
+        #    )
+
+        self.__subCmdArg = LRCArg.sCreateDynamicArg(
+            'subcmd',
+            **argSettings
         )
 
         # Update description, add help text from subcmds
