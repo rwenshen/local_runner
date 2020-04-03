@@ -85,27 +85,28 @@ class LROFactory(metaclass=_LROFactoryMetaClass):
         baseTypeName = metaClass.baseClassName
         isSingleton = metaClass.isSingleton
         isUnique = metaClass.isUnique
-        ignoreList = metaClass.ignoreList
 
         indent = '\t'
         LROFactory.cLogDebug(
             f'{baseTypeName}: class: {lroClass}, meta: {metaClass}')
         LROFactory.cLogDebug(
             f'{indent}isSingleton: {isSingleton}, isUnique: {isUnique}')
-        LROFactory.cLogDebug(f'{indent}ignoreList: {ignoreList}')
 
         # base class should not be registered
         if lroClass.__name__ == baseTypeName:
             LROFactory.cLogInfo(
                 f'skipped {baseTypeName}: skip base class {lroClass}.')
             return
-        elif lroClass.__name__ in ignoreList:
-            LROFactory.cLogInfo(
-                f'skipped {baseTypeName}: in ignore list for {lroClass}.')
-            return
 
         lroDict = _LROFactoryMetaClass.getLroDict()
         lroSubDict = lroDict.setdefault(baseTypeName, {})
+
+        # abstract class
+        if isUnique or isSingleton:
+            if len(lroClass.__abstractmethods__) > 0:
+                LROFactory.cLogInfo(
+                    f'skipped {baseTypeName}: {lroClass} is abstract.')
+                return
 
         # handle duplicated class name
         className = lroClass.__name__

@@ -102,5 +102,6 @@ class LRShellCommand(LRCommand):
     def cwd(self, value: str):
         self.__cwd = value
 
+    @abstractmethod
     def doInput(self, args):
-        self.logInfo(f'Nothing was input.')
+        pass

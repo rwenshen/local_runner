@@ -6,7 +6,8 @@ from . import lr_console_cmds
 
 
 class __shellCheck(LRShellCommand):
-    pass
+    def doInput(self, args):
+        pass
 
 
 class LRCmd:

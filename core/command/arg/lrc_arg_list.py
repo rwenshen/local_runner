@@ -1,4 +1,4 @@
-from .. import *
+from ... import *
 from .lrc_arg import LRCArg
 
 

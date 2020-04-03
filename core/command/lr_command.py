@@ -1,7 +1,5 @@
 from .. import *
-from .lrc_arg import LRCArg
-from .lrc_arg_list import LRCArgList
-from .lrc_arg_parser import LRCArgParser
+from .arg import *
 from . import base_commands
 
 
@@ -19,7 +17,6 @@ class LRCommandMetaClass(LRObjectMetaClass):
     baseClassName = 'LRCommand'
     extraInterfaces = (LRCommandLogger,)
     isSingleton = True
-    ignoreList = base_commands.base_commandsList
 
 
 class LRCommand(LRObject, metaclass=LRCommandMetaClass):
@@ -30,7 +27,11 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
 
     @staticmethod
     def sGetCmd(cmdName: str):
-        return LROFactory.sFind(LRCommand.__name__, cmdName)
+        cmd = LROFactory.sFind(LRCommand.__name__, cmdName)
+        assert cmd is not None,\
+            f'Unregistered command "{cmdName}", please check the spell or '\
+            'whether the command is abstract.'
+        return cmd
 
     @staticmethod
     def sParseCmdArgs(cmdName: str, argList: list):
@@ -147,8 +148,12 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
             return wrapper
         return decorator
 
+    @abstractmethod
     def initialize(self):
         pass
+
+    def printHelp(self, *args):
+        LRCArgParser.printHelp(self)
 
     def doExecution(self, args: LRCArgList):
         self.getLogger().info(
@@ -165,14 +170,10 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
 
     def preExecute(self, args: LRCArgList):
         pass
-
+    
+    @abstractmethod
     def execute(self, args: LRCArgList) -> int:
-        self.logWarning(
-            f'Method "execute" is not implemented! Nothing is done.')
         return 0
 
     def postExecute(self, args: LRCArgList, returnCode: int):
         pass
-
-    def printHelp(self, *args):
-        LRCArgParser.printHelp(self)

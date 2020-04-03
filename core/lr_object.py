@@ -1,15 +1,15 @@
+from abc import ABCMeta, abstractmethod
 from enum import Enum, unique
 
 from .lr_obj_factory import LROFactory
 
 
-class LRObjectMetaClass(type):
+class LRObjectMetaClass(ABCMeta):
     '''Base meta class for LRObject.'''
-
 
     @classmethod
     def newImpl(cls, name, bases, attrs):
-        finalType = type.__new__(cls, name, bases, attrs)
+        finalType = ABCMeta.__new__(cls, name, bases, attrs)
         LROFactory.sRegisterLRO(finalType, cls)
         return finalType
 
@@ -17,16 +17,23 @@ class LRObjectMetaClass(type):
     extraInterfaces = []
     isSingleton = False
     isUnique = False
-    ignoreList = []
 
     def __new__(cls, name, bases, attrs):
         return cls.newImpl(name, (*bases, *cls.extraInterfaces), attrs)
 
 
 class LRObject(metaclass=LRObjectMetaClass):
-    pass
 
-    '''
+    @abstractmethod
+    def __init__(self):
+        pass
+
+    def register(cls, subclass):
+        '''Delete the ABCMeta.register
+        '''
+        pass
+
+    ''' TODO
 from .LRPropertyDefBase import LRPropertyDefBase
 
 

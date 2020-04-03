@@ -1,4 +1,4 @@
-from .. import *
+from ... import *
 
 
 class LRCArgLogger(LRLogger):
@@ -48,7 +48,7 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
             default = None,
             shortName = None):
 
-        arg = LRCArg()
+        arg = LRCArg.sGetArg('__internal_dynamic')
         arg.__name = argName
         arg.__description = description
         arg.__type = argType
@@ -237,13 +237,6 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
             if len(self.myChoices) == 0:
                 self.__choices = None
 
-    def initialize(self):
-        self.logInfo(
-            f'Initialize is not defined, will be used as optional text argument.')
-
-
-class remainderArg(LRCArg):
-    @LRCArg.argRemainder()
+    @abstractmethod
     def initialize(self):
         pass
-    
