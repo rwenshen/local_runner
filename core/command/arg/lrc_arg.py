@@ -48,7 +48,7 @@ class LRCArg(LRObject, metaclass=LRCArgMetaClass):
             default = None,
             shortName = None):
 
-        arg = LRCArg.sGetArg('__internal_dynamic')
+        arg = LRCArg.sGetArg('__internal_dynamic').clone()
         arg.__name = argName
         arg.__description = description
         arg.__type = argType
