@@ -106,7 +106,8 @@ class LRSelectionCommand(LRCompoundCommand):
 
     def executeCallableSubCmd(self, subCmdAlias: str, args):
         toCall = getattr(self, f'call_{subCmdAlias}')
-        extraArgs = args.remainder if self.myNeedExtraArgs else []
+        extraArgs = args.remainder
+        # TODO subArgs = LRCommand.sParseCmdArgs(self.myName, extraArgs)
         return toCall(args, extraArgs)
 
     def executeDefinedSubCmd(self, cmdInfo, args):

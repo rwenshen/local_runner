@@ -61,3 +61,6 @@ class LRCArgList(LRLogger):
         cloned = LRCArgList(cmd)
         cloned.__myDict.update(self.__myDict)
         return cloned
+
+    def getDict(self):
+        return self.__myDict
