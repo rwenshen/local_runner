@@ -89,7 +89,7 @@ class LRCommand(LRObject, metaclass=LRCommandMetaClass):
             else:
                 yield LRCArg.sGetArg(argName)
 
-    def containArg(self, argName: str):
+    def containsArg(self, argName: str):
         return argName in self.__myArgs
 
     @staticmethod

@@ -85,6 +85,9 @@ class LRShellCommand(LRCommand):
         p.stdin.close()
 
         p.wait()
+        if not args.silent:
+            tStrout.join()
+            tStrerr.join()
         return p.returncode
 
     def input(self, input: str):

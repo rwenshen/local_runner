@@ -59,14 +59,18 @@ class LRCompoundCommand(LRCommand):
                             f' "{subCmdAlias}" is NOT registered! Just skip.')
                         return func(self)
                     # verify arguments
-                    cmdArgNames = [arg.myName for arg in cmd.iterArgs()]
                     for argName, value in args.items():
-                        if argName not in cmdArgNames:
+                        if not cmd.containsArg(argName):
                             self.logWarning(
                                 f'Argument "{argName}"" is NOT in Command'
                                 f' "{cmdName}" for sub command "{subCmdAlias}"!')
                         else:
                             arg = LRCArg.sGetArg(argName)
+                            if arg is None: # for direct
+                                for cmdArg in cmd.iterArgs():
+                                    if cmdArg.myName == argName:
+                                        arg = cmdArg
+                                        break
                             if not isinstance(value, arg.myType):
                                 self.logWarning(
                                     f'"{value}" is NOT the type of argument'
@@ -82,7 +86,7 @@ class LRCompoundCommand(LRCommand):
                     # add the subcmd
                     self.__mySubCmds[subCmdAlias] = (cmdName, args)
                     for arg in cmd.iterArgs():
-                        if arg.myName not in args and not self.containArg(arg.myName):
+                        if arg.myName not in args and not self.containsArg(arg.myName):
                             self.__mySubArgs.setdefault(arg.myName, arg)
                 
                 return func(self)
