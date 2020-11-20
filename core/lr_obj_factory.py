@@ -1,3 +1,4 @@
+from typing import Union, Any, List, Optional, cast
 from .lr_core import LRLogger
 
 
@@ -139,7 +140,7 @@ class LROFactory(metaclass=_LROFactoryMetaClass):
         LROFactory.cLogInfo(f'{baseTypeName}: {lroClass} registered.')
 
     @staticmethod
-    def sFindList(baseTypeName: str):
+    def sFindList(baseTypeName: str)-> list:
         '''Static method, return a list of all LRObjects by baseTypeName.
 
         Parameters
@@ -192,7 +193,7 @@ class LROFactory(metaclass=_LROFactoryMetaClass):
             else None
 
     @staticmethod
-    def sFindAndCreate(baseTypeName, typeName, *args, **kwargs):
+    def sFindAndCreate(baseTypeName: str, typeName: str, *args, **kwargs):
         '''Static method, find LRObject type by baseTypeName and typeName, then
         call the constructor by args and kwargs.
         
@@ -227,7 +228,7 @@ class LROFactory(metaclass=_LROFactoryMetaClass):
         return None
 
     @staticmethod
-    def sGetUnique(baseTypeName):
+    def sGetUnique(baseTypeName: str):
         '''Static method, if the base type is set as unique, the unique instance
         of the type will be returned.
 
@@ -254,7 +255,7 @@ class LROFactory(metaclass=_LROFactoryMetaClass):
             else None
 
     @staticmethod
-    def sContain(baseTypeName, typeName):
+    def sContain(baseTypeName: str, typeName: str) -> bool:
         '''Static method, return if the typeName with baseTypeName has been re-
         gistered.
 
