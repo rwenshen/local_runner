@@ -37,7 +37,7 @@ class LRCmd:
 
         # descriptions
         argParser = argparse.ArgumentParser(
-            description=LROFactory.LREnvironments.PROJ_DESC,
+            description=LREnvironments.PROJ_DESC,
         )
 
         # commands

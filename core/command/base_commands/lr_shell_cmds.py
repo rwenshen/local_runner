@@ -34,7 +34,7 @@ class LRShellCommand(LRCommand):
     def __shell(self):
         if isinstance(LROFactory.LREnvironments, list):
             return 'UNINITIALIZED'
-        return LROFactory.LREnvironments.SHELL
+        return LREnvironments.SHELL
 
     @LRCommand.addArg('silent')
     def initialize(self):

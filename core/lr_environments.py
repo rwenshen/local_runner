@@ -1,11 +1,16 @@
+import platform
 from .lr_obj_factory import LROFactory
 from ..core.lr_object import LRObjectMetaClass, LRObject
 
 
 class LREnvironmentsMetaClass(LRObjectMetaClass):
     baseClassName = 'LREnvironments'
-    isUnique = True
+    isSingleton = True
 
+    def __getattr__(cls, key):
+        if LREnvironments.sContain(key):
+            return LREnvironments.sGetEnv(key)
+        return type.__getattr__(cls, key)
 
 class LREnvInfo:
     def __init__(self, value, category):
@@ -15,62 +20,71 @@ class LREnvInfo:
 
 class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
 
-    __environments = {}
-    __defaultEnvs = {
-        'PROJ_DESC': LREnvInfo('Unknown, please set environment "PROJ_DESC".', '__lr'),
-        'SHELL': LREnvInfo('Unknown, please set environment "PROJ_DESC".', '__lr'),
+    __initialized = False
+    __environments = {
+        'PROJ_DESC': LREnvInfo('Unknown, please set environment "PROJ_DESC".', ''),
+        'SHELL': LREnvInfo('Unknown, please set environment "SHELL".', ''),
     }
-
-    @staticmethod
-    def sAddDefaultEnv(category: str, **args):
-        for env, value in args.items():
-            assert env not in LREnvironments.__defaultEnvs
-            LREnvironments.__defaultEnvs[env] = LREnvInfo(value, category)
 
     @staticmethod
     def sIterEnv():
         for env, info in LREnvironments.__environments.items():
             yield env, info.value, info.category
-        for env, info in LREnvironments.__defaultEnvs.items():
-            if env not in LREnvironments.__environments:
-                yield env, info.value, info.category
 
-    def __getattr__(self, name):
-        if name in LREnvironments.__environments:
-            return LREnvironments.__environments[name].value
-        if name in LREnvironments.__defaultEnvs:
-            return LREnvironments.__defaultEnvs[name].value
-        raise AttributeError("Environment '%s' is not existent." % (name))
+    @staticmethod
+    def sContain(key: str):
+        return key in LREnvironments.__environments
+
+    @staticmethod
+    def sGetEnv(key: str):
+        return LREnvironments.__environments[key].value
 
     def __init__(self):
+        self.category = None
+
+        if not LREnvironments.__initialized:
+            # set default shell
+            if platform.system() == 'Windows':
+                LREnvironments.__environments['SHELL'] = LREnvInfo('cmd', '')
+            elif platform.system() == 'Linux':
+                LREnvironments.__environments['SHELL'] = LREnvInfo('shell', '')
+
+            LREnvironments.__initialized = True
+
+        # initialization
         self.initialize()
+        assert self.category is not None
+
+    def setCategory(category: str):
+        def decorator(func):
+            def wrapper(self):
+                self.category = category
+                return func(self)
+            return wrapper
+        return decorator
 
     def setEnv(**args):
         def decorator(func):
             def wrapper(self):
                 for env, value in args.items():
-                    if env in LREnvironments.__defaultEnvs:
-                        category = LREnvironments.__defaultEnvs[env].category
-                        LREnvironments.__environments[env] = LREnvInfo(
-                            value, category)
-                    else:
-                        assert env in LREnvironments.__environments
-                        LREnvironments.__environments[env].value = value
-                return func(self)
-            return wrapper
-        return decorator
-
-    def addEnv(category: str, **args):
-        def decorator(func):
-            def wrapper(self):
-                for env, value in args.items():
-                    assert env not in LREnvironments.__defaultEnvs
-                    assert env not in LREnvironments.__environments
+                    assert env in LREnvironments.__environments
+                    category = LREnvironments.__environments[env].category
                     LREnvironments.__environments[env] = LREnvInfo(
                         value, category)
                 return func(self)
             return wrapper
         return decorator
 
+    def addEnv(**args):
+        def decorator(func):
+            def wrapper(self):
+                for env, value in args.items():
+                    assert env not in LREnvironments.__environments
+                    LREnvironments.__environments[env] = LREnvInfo(
+                        value, self.category)
+                return func(self)
+            return wrapper
+        return decorator
+
     def initialize(self):
-        raise NotImplementedError
+        self.category = ''
