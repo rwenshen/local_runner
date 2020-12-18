@@ -7,6 +7,7 @@ __all__ = [
     'LRObjectMetaClass',
     'LRObject',
     'LREnvironments',
+    'LREnvironmentsOverride',
     'LRLogger',
 ]
 
@@ -16,5 +17,5 @@ from abc import abstractstaticmethod
 from abc import abstractproperty
 from .lr_obj_factory import LROFactory
 from .lr_object import LRObjectMetaClass, LRObject
-from .lr_environments import LREnvironments
+from .lr_environments import LREnvironments, LREnvironmentsOverride
 from .lr_core import LRLogger

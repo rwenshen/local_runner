@@ -7,14 +7,6 @@ from ... import *
 from ..lr_command import LRCommand, LRCArg
 
 
-class silentArg(LRCArg):
-    '''Enable silent mode for LRShellCommand.'''
-    @LRCArg.argType(bool)
-    @LRCArg.argShortName('s')
-    def initialize(self):
-        pass
-
-
 class LRShellCommand(LRCommand):
 
     def getLogger(self):
@@ -32,11 +24,14 @@ class LRShellCommand(LRCommand):
 
     @property
     def __shell(self):
-        if isinstance(LROFactory.LREnvironments, list):
-            return 'UNINITIALIZED'
         return LREnvironments.SHELL
 
-    @LRCommand.addArg('silent')
+    @LRCommand.addArgDirectly(
+        'silent',
+        'Enable silent mode for LRShellCommand.',
+        argType=bool,
+        default=False,
+        shortName='s')
     def initialize(self):
         pass
 
