@@ -64,7 +64,8 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
     @staticmethod
     def sOverrideEnv(**args) -> typing.NoReturn:
         for env, value in args.items():
-            assert env in LREnvironments.__environments
+            assert env in LREnvironments.__environments, \
+                f'{env} is not defined in Environment, cannot be overridden'
             LREnvironments.__overriddenEnvironments[env] = value
 
     def __init__(self):
