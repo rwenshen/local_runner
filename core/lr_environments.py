@@ -14,7 +14,9 @@ class LREnvironmentsMetaClass(LRObjectMetaClass):
         '''Class __getattr__, support get environment by LREnvironments.envKey.'''
 
         if LREnvironments.sContain(key):
-            return LREnvironments.sGetEnv(key)
+            value = LREnvironments.sGetEnv(key)
+            assert value is not None, f'Unset environment {key}!'
+            return value
         return type.__getattr__(cls, key)
 
 
@@ -47,7 +49,6 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         value = LREnvironments.__overriddenEnvironments.get(key, None)
         if value is None:
             value =  LREnvironments.__environments[key].value
-        assert value is not None, f'Unset environment {key}!'
         return value
 
     @staticmethod
