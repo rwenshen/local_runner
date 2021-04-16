@@ -5,6 +5,7 @@ import shlex
 import threading
 from ... import *
 from ..lr_command import LRCommand, LRCArg
+from ...lr_shell import *
 
 
 class LRShellCommand(LRCommand):
@@ -15,7 +16,8 @@ class LRShellCommand(LRCommand):
     def log(self, func, msg: str, *args, **kwargs):
         func(msg, *args, **kwargs)
         indent = '\t'
-        func(f'{indent}in shell command {self.__class__} with shell "{self.__shell}".')
+        func(f'{indent}in shell command {self.__class__} with shell'
+            f' "{self.__shell.shell}".')
 
     def __init__(self):
         self.__currentIn = None
@@ -24,7 +26,7 @@ class LRShellCommand(LRCommand):
 
     @property
     def __shell(self):
-        return LREnvironments.SHELL
+        return LRShell.sGet(LREnvironments.SHELL)
 
     @LRCommand.addArgDirectly(
         'silent',
@@ -55,7 +57,7 @@ class LRShellCommand(LRCommand):
 
     def execute(self, args):
 
-        p = subprocess.Popen(shlex.split(self.__shell),
+        p = subprocess.Popen(shlex.split(self.__shell.shell),
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
@@ -79,7 +81,7 @@ class LRShellCommand(LRCommand):
 
         self.doInput(args)
         # exit with correct exit code
-        self.input(LREnvironments.SHELL_EXIT_LINE)
+        self.input(self.__shell.exitWithCodeCmd)
 
         p.stdin.close()
 
@@ -95,6 +97,9 @@ class LRShellCommand(LRCommand):
         self.__currentIn.write(
             bytes(toWrite, encoding=locale.getpreferredencoding()))
         self.__currentIn.flush()
+
+    def inputVerify(self):
+        self.input(self.__shell.verifyCmd)
 
     @property
     def cwd(self):

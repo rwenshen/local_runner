@@ -4,7 +4,6 @@ from abc import abstractmethod
 from .lr_obj_factory import LROFactory
 from ..core.lr_object import LRObjectMetaClass, LRObject
 
-
 class LREnvironmentsMetaClass(LRObjectMetaClass):
     '''Base meta class for LREnvironments.'''
     baseClassName = 'LREnvironments'
@@ -32,7 +31,6 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
     __environments = {
         'PROJ_DESC': LREnvInfo(None, ''),
         'SHELL': LREnvInfo(None, ''),
-        'SHELL_EXIT_LINE': LREnvInfo(None, ''),
     }
     __overriddenEnvironments = {}
 
@@ -78,14 +76,10 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
             if systemPlatform == 'Windows':
                 LREnvironments.__environments['SHELL']\
                     = LREnvInfo('cmd', '')
-                LREnvironments.__environments['SHELL_EXIT_LINE']\
-                    = LREnvInfo('exit %errorlevel%', '')
             elif systemPlatform == 'Linux'\
                     or 'CYGWIN' in systemPlatform:
                 LREnvironments.__environments['SHELL']\
-                    = LREnvInfo('shell', '')
-                LREnvironments.__environments['SHELL_EXIT_LINE']\
-                    = LREnvInfo('exit $?', '')
+                    = LREnvInfo('bash', '')
 
             LREnvironments.__initialized = True
 

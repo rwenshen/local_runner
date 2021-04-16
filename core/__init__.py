@@ -8,6 +8,7 @@ __all__ = [
     'LRObject',
     'LREnvironments',
     'LREnvironmentsOverride',
+    'LRShell',
     'LRLogger',
 ]
 
@@ -19,3 +20,4 @@ from .lr_obj_factory import LROFactory
 from .lr_object import LRObjectMetaClass, LRObject
 from .lr_environments import LREnvironments, LREnvironmentsOverride
 from .lr_core import LRLogger
+from .lr_shell import LRShell
