@@ -86,7 +86,8 @@ class LRCompoundCommand(LRCommand):
                     # add the subcmd
                     self.__mySubCmds[subCmdAlias] = (cmdName, args)
                     for arg in cmd.iterArgs():
-                        if arg.myName not in args and not self.containsArg(arg.myName):
+                        if arg.myName not in args\
+                                and not self.containsArg(arg.myName):
                             self.__mySubArgs.setdefault(arg.myName, arg)
                 
                 return func(self)

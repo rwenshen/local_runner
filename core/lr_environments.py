@@ -32,6 +32,7 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
     __environments = {
         'PROJ_DESC': LREnvInfo(None, ''),
         'SHELL': LREnvInfo(None, ''),
+        'SHELL_EXIT_LINE': LREnvInfo(None, ''),
     }
     __overriddenEnvironments = {}
 
@@ -73,10 +74,18 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         self.category = None
         if not LREnvironments.__initialized:
             # set default shell
-            if platform.system() == 'Windows':
-                LREnvironments.__environments['SHELL'] = LREnvInfo('cmd', '')
-            elif platform.system() == 'Linux':
-                LREnvironments.__environments['SHELL'] = LREnvInfo('shell', '')
+            systemPlatform = platform.system()
+            if systemPlatform == 'Windows':
+                LREnvironments.__environments['SHELL']\
+                    = LREnvInfo('cmd', '')
+                LREnvironments.__environments['SHELL_EXIT_LINE']\
+                    = LREnvInfo('exit %errorlevel%', '')
+            elif systemPlatform == 'Linux'\
+                    or 'CYGWIN' in systemPlatform:
+                LREnvironments.__environments['SHELL']\
+                    = LREnvInfo('shell', '')
+                LREnvironments.__environments['SHELL_EXIT_LINE']\
+                    = LREnvInfo('exit $?', '')
 
             LREnvironments.__initialized = True
 

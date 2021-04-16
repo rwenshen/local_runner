@@ -76,7 +76,11 @@ class LRShellCommand(LRCommand):
             tStrerr.start()
 
         self.__currentIn = p.stdin
+
         self.doInput(args)
+        # exit with correct exit code
+        self.input(LREnvironments.SHELL_EXIT_LINE)
+
         p.stdin.close()
 
         p.wait()
