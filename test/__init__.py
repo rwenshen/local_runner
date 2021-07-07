@@ -51,7 +51,7 @@ config = {
 
 logging.config.dictConfig(config)
 
-from . import envs
-from . import args
-from . import commands
+#from . import envs
+#from . import args
+#from . import commands
 #from . import errors

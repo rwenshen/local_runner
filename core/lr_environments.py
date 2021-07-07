@@ -1,5 +1,6 @@
 import typing
 import platform
+import os
 from abc import abstractmethod
 from .lr_obj_factory import LROFactory
 from ..core.lr_object import LRObjectMetaClass, LRObject
@@ -32,7 +33,9 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         'PROJ_DESC': LREnvInfo(None, ''),
         'SHELL': LREnvInfo(None, ''),
     }
+    __exportedEnvironments = set()
     __overriddenEnvironments = {}
+    __overriddenExportedEnvironments = set()
 
     @staticmethod
     def sIterEnv():
@@ -53,6 +56,11 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
     @staticmethod
     def sClearOverrides() -> typing.NoReturn:
         LREnvironments.__overriddenEnvironments.clear()
+        for env in LREnvironments.__overriddenExportedEnvironments:
+            os.environ.pop(env, 'None')
+        for env in LREnvironments.__exportedEnvironments:
+            LREnvironments.__exportEnv(env)
+        LREnvironments.__overriddenExportedEnvironments.clear()
 
     @staticmethod
     def sApplyOverride(overrideClassName: str) -> typing.NoReturn:
@@ -60,6 +68,11 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
                                                 overrideClassName)
         assert override is not None
         LREnvironments.sOverrideEnv(**override.getOverriddens())
+        LREnvironments.sOverrideExportedEnv(*override.getOverriddenExported())
+        for env in LREnvironments.__exportedEnvironments:
+            LREnvironments.__exportEnv(env)
+        for env in LREnvironments.__overriddenExportedEnvironments:
+            LREnvironments.__exportEnv(env)
         
     @staticmethod
     def sOverrideEnv(**args) -> typing.NoReturn:
@@ -67,6 +80,22 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
             assert env in LREnvironments.__environments, \
                 f'{env} is not defined in Environment, cannot be overridden'
             LREnvironments.__overriddenEnvironments[env] = value
+
+    @staticmethod
+    def sOverrideExportedEnv(*args) -> typing.NoReturn:
+        for env in args:
+            assert env in LREnvironments.__environments, \
+                f'{env} is not defined in Environment, cannot be exported'
+            LREnvironments.__overriddenExportedEnvironments.add(env)
+
+    @staticmethod
+    def __exportEnv(env):
+        value = LREnvironments.sGetEnv(env)
+        if value is None:
+            os.environ.pop(env, 'None')
+        else:
+            value = str(value)
+            os.environ[env] = value
 
     def __init__(self):
         self.category = None
@@ -86,6 +115,16 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         # initialization
         self.initialize()
         assert self.category is not None
+
+        # export environments to system
+        for env in LREnvironments.__exportedEnvironments:
+            LREnvironments.__exportEnv(env)
+
+    def __del__(self):
+        for env in LREnvironments.__exportedEnvironments:
+            os.environ.pop(env, 'None')
+        for env in LREnvironments.__overriddenExportedEnvironments:
+            os.environ.pop(env, 'None')
 
     @staticmethod
     def setCategory(category: str):
@@ -124,6 +163,18 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
             return wrapper
         return decorator
 
+    @staticmethod
+    def exportEnv(*args):
+        def decorator(func):
+            def wrapper(self):
+                assert issubclass(self.__class__, LREnvironments)
+                for env in args:
+                    assert env in LREnvironments.__environments
+                    LREnvironments.__exportedEnvironments.add(env)
+                return func(self)
+            return wrapper
+        return decorator
+
     @abstractmethod
     def initialize(self):
         pass
@@ -137,6 +188,7 @@ class LREnvironmentsOverrideMetaClass(LRObjectMetaClass):
 class LREnvironmentsOverride(LRObject, metaclass=LREnvironmentsOverrideMetaClass):
     def __init__(self):
         self.__environments = {}
+        self.__exportedEnvironments = set()
         self.initialize()
 
     @staticmethod
@@ -151,8 +203,22 @@ class LREnvironmentsOverride(LRObject, metaclass=LREnvironmentsOverrideMetaClass
             return wrapper
         return decorator
 
+    @staticmethod
+    def overrideExportEnv(*args):
+        def decorator(func):
+            def wrapper(self):
+                assert issubclass(self.__class__, LREnvironmentsOverride)
+                for env in args:
+                    self.__exportedEnvironments.add(env)
+                return func(self)
+            return wrapper
+        return decorator
+
     def getOverriddens(self):
         return self.__environments.copy()
+
+    def getOverriddenExported(self):
+        return [env for env in self.__exportedEnvironments]
 
     @abstractmethod
     def initialize(self):
