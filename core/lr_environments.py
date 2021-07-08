@@ -1,9 +1,10 @@
 import typing
 import platform
-import os
+import atexit
 from abc import abstractmethod
 from .lr_obj_factory import LROFactory
 from ..core.lr_object import LRObjectMetaClass, LRObject
+from .utils.env_utils import EnvImporter
 
 class LREnvironmentsMetaClass(LRObjectMetaClass):
     '''Base meta class for LREnvironments.'''
@@ -36,6 +37,11 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
     __exportedEnvironments = set()
     __overriddenEnvironments = {}
     __overriddenExportedEnvironments = set()
+    __envImporter = None
+
+    @staticmethod
+    def sGetEnvImporter() -> EnvImporter:
+        return LREnvironments.__envImporter
 
     @staticmethod
     def sIterEnv():
@@ -61,7 +67,7 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
     def sClearOverrides() -> typing.NoReturn:
         LREnvironments.__overriddenEnvironments.clear()
         for env in LREnvironments.__overriddenExportedEnvironments:
-            os.environ.pop(env, 'None')
+            LREnvironments.__envImporter.popEnv(env)
         for env in LREnvironments.__exportedEnvironments:
             LREnvironments.__exportEnv(env)
         LREnvironments.__overriddenExportedEnvironments.clear()
@@ -96,10 +102,10 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
     def __exportEnv(env):
         value = LREnvironments.sGetEnv(env)
         if value is None:
-            os.environ.pop(env, 'None')
+            LREnvironments.__envImporter.popEnv(env)
         else:
             value = str(value)
-            os.environ[env] = value
+            LREnvironments.__envImporter.importEnv(env, value)
 
     def __init__(self):
         self.category = None
@@ -120,15 +126,13 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         self.initialize()
         assert self.category is not None
 
-        # export environments to system
+        # system environments
+        LREnvironments.__envImporter = EnvImporter()
         for env in LREnvironments.__exportedEnvironments:
             LREnvironments.__exportEnv(env)
 
     def __del__(self):
-        for env in LREnvironments.__exportedEnvironments:
-            os.environ.pop(env, 'None')
-        for env in LREnvironments.__overriddenExportedEnvironments:
-            os.environ.pop(env, 'None')
+        del LREnvironments.__envImporter
 
     @staticmethod
     def setCategory(category: str):
