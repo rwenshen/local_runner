@@ -54,6 +54,10 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
         return value
 
     @staticmethod
+    def sHasSet(key: str) -> bool:
+        return LREnvironments.sGetEnv(key) is not None
+
+    @staticmethod
     def sClearOverrides() -> typing.NoReturn:
         LREnvironments.__overriddenEnvironments.clear()
         for env in LREnvironments.__overriddenExportedEnvironments:
@@ -156,7 +160,8 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
             def wrapper(self):
                 assert issubclass(self.__class__, LREnvironments)
                 for env, value in args.items():
-                    assert env not in LREnvironments.__environments
+                    assert env not in LREnvironments.__environments, \
+                        f'Duplicated env! "{env}"" has been added!'
                     LREnvironments.__environments[env] = LREnvInfo(
                         value, self.category)
                 return func(self)
@@ -169,7 +174,8 @@ class LREnvironments(LRObject, metaclass=LREnvironmentsMetaClass):
             def wrapper(self):
                 assert issubclass(self.__class__, LREnvironments)
                 for env in args:
-                    assert env in LREnvironments.__environments
+                    assert env in LREnvironments.__environments, \
+                        f'Try to export undefined env! "{env}" has NOT been added!'
                     LREnvironments.__exportedEnvironments.add(env)
                 return func(self)
             return wrapper
