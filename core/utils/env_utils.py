@@ -3,6 +3,8 @@ from pathlib import Path
 import os
 import subprocess
 import locale
+import platform
+import re
 
 
 __all__ = [
@@ -39,43 +41,33 @@ class EnvImporter:
             else:
                 self.importEnv(env, str(value))
 
+    __pattern = re.compile(r'(\w+)=(.*)')
     def importEnvironFromShell(self,
-                shellArgs: List[str],
+                shellCmd: str,
                 cwd: Path = Path('.'),
                 importNew: bool = True,
                 importPath: bool = True,
                 importEnvs: List[str] = [],
             ):
         # get output
-        sep = '=' * 47
-        args = shellArgs.copy() + ['&&', 'echo', sep, '&&', 'set']
-        outputBytes = subprocess.check_output(args,
+        args = shellCmd + ' && set'
+        os.environ['abc'] = 'ter\'abc"'
+        outputBytes = subprocess.check_output(
+                            args,
                             shell=True,
                             cwd=str(cwd))
         output = str(outputBytes, encoding=locale.getpreferredencoding())
+        output = output.replace(os.linesep, '\n')
 
         # parse envs
-        skip = True
-        isInFunc = False
+        pattern = EnvImporter.__pattern
         envs = {}
-        for line in output.splitlines():
-            line = line.rstrip()
-            if line == sep:
-                skip = False
-                continue
-            if skip:
-                continue
-            if line[0] in ' \t\v':
-                continue
-            if isInFunc:
-                if line == '}':
-                    isInFunc = False
-                continue
-            if '=' not in line:
-                isInFunc = True
-                continue
-            pair = line.split('=')
-            envs[pair[0]] = pair[1]
+        for m in pattern.finditer(output):
+            key = m.groups()[0]
+            value = m.groups()[1]
+            if platform.system() != 'Windows':
+                value = value.strip("'")
+            envs[key] = value
 
         # import envs
         for env, value in envs.items():

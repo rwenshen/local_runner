@@ -1,5 +1,6 @@
 import os
 import unittest
+import platform
 from ..core.utils.env_utils import EnvImporter
 
 
@@ -111,31 +112,37 @@ class Test1(unittest.TestCase):
     def test_4_importEnvironFromShell(self):
         self.assertNotEnv(self.testEnvs[0])
 
+        def getSetCmd(key: str, value: str) -> str:
+            if platform.system() == 'Windows':
+                return f'set "{key}={value}"'
+            else:
+                return f'{key}="{value}"'
+
         envImporter = EnvImporter()
-        envImporter.importEnvironFromShell(['echo'])
+        envImporter.importEnvironFromShell('echo')
         self.assertNotEnv(self.testEnvs[0])
         envImporter.importEnvironFromShell(
-            ['set', f'{self.testEnvs[0]}={self.testValues[0]}'],
+            getSetCmd(self.testEnvs[0], self.testValues[0]),
             importNew=False)
         self.assertNotEnv(self.testEnvs[0])
-        envImporter.importEnvironFromShell(['set', f'{self.testEnvs[0]}={self.testValues[0]}'])
+        envImporter.importEnvironFromShell(
+            getSetCmd(self.testEnvs[0], self.testValues[0]))
         self.assertEnv(self.testEnvs[0], self.testValues[0])
         del envImporter
         self.assertNotEnv(self.testEnvs[0])
 
-
-
         os.environ[self.testEnvs[0]] = self.testValues[1]
         self.assertEnv(self.testEnvs[0], self.testValues[1])
         envImporter = EnvImporter()
-        envImporter.importEnvironFromShell(['set', f'{self.testEnvs[0]}={self.testValues[0]}'])
+        envImporter.importEnvironFromShell(
+            getSetCmd(self.testEnvs[0], self.testValues[0]))
         self.assertEnv(self.testEnvs[0], self.testValues[1])
         del envImporter
         self.assertEnv(self.testEnvs[0], self.testValues[1])
 
         envImporter = EnvImporter()
         envImporter.importEnvironFromShell(
-            ['set', f'{self.testEnvs[0]}={self.testValues[0]}'],
+            getSetCmd(self.testEnvs[0], self.testValues[0]),
             importEnvs = [self.testEnvs[0]])
         self.assertEnv(self.testEnvs[0], self.testValues[0])
         del envImporter
@@ -145,10 +152,11 @@ class Test1(unittest.TestCase):
         self.assertEqual(pathValue, os.environ['PATH'])
         envImporter = EnvImporter()
         envImporter.importEnvironFromShell(
-            ['set', f'PATH={self.testValues[0]}'],
+            getSetCmd('PATH', self.testValues[0]),
             importPath = False)
         self.assertEqual(pathValue, os.environ['PATH'])
-        envImporter.importEnvironFromShell(['set', f'PATH={self.testValues[0]}'])
+        envImporter.importEnvironFromShell(
+            getSetCmd('PATH', self.testValues[0]))
         self.assertNotEqual(pathValue, os.environ['PATH'])
         del envImporter
         self.assertEqual(pathValue, os.environ['PATH'])
